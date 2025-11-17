@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Position Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<style>
+/* General Reset & Base */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:#121212;
+  color:#e8e8e8;
+  font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  -webkit-text-size-adjust:100%;
+  touch-action:manipulation;
+}
+
+/* Color & Style Variables */
+:root{
+  --bg:#121212;
+  --bg2:#1c1c1e;
+  --bg3:#2c2c2e;
+  --c:#111111; /* Kept for result box item background */
+  --t:#f0f0f0;
+  --a:#f0b90b;
+  --green:#48bb78;
+  --red:#f6465d;
+  --border:#3a3a3c;
+  --text-secondary:#8e8e93;
+  --radius: 10px;
+  --spacing: 16px;
+}
+
+/* Main Layout */
+.container{
+  max-width:1300px; /* Wider for 2x2 grid */
+  margin:0 auto;
+  padding:24px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  grid-template-rows: auto auto; /* Two rows */
+  gap: 24px;
+}
+
+/* Header */
+.header{text-align:center; margin-bottom:8px;}
+h2{
+  font-size:26px;
+  font-weight:700;
+  letter-spacing:-0.5px;
+  color: var(--t);
+}
+.subtitle{
+  font-size:14px;
+  color:var(--text-secondary);
+}
+#currentPresetDisplay{
+  font-size:12px;
+  font-weight:600;
+  color:var(--a);
+}
+#currentPresetDisplay span{
+  color:var(--text-secondary);
+}
+
+/* Card component for sections */
+.card{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:var(--spacing);
+  display:flex;
+  flex-direction:column;
+  gap:var(--spacing);
+  height: 100%; /* Make cards fill grid cell height */
+}
+.card-title{
+  font-size:16px;
+  font-weight:600;
+  color:var(--t);
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:4px;
+}
+
+/* Form styles */
+.form-group{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+label{
+  color:var(--text-secondary);
+  font-size:13px;
+  font-weight:500;
+}
+input[type="number"], input[type="text"]{
+  background:var(--bg3);
+  color:var(--t);
+  border:1px solid var(--border);
+  padding:12px;
+  border-radius:8px;
+  font-size:15px;
+  font-family:inherit;
+  transition:all 0.2s;
+  outline:none;
+  width:100%;
+}
+input:focus{
+  border-color:var(--a);
+  box-shadow:0 0 0 3px rgba(240,185,11,0.1);
+}
+input::placeholder{color:#606060;}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type="number"]{-moz-appearance:textfield}
+
+/* Modern Toggle Buttons */
+.toggle-group{
+  display:flex;
+  background:var(--bg3);
+  border-radius:8px;
+  padding:4px;
+  border:1px solid var(--border);
+}
+.toggle-btn{
+  flex:1;
+  padding:8px 12px;
+  background:transparent;
+  color:var(--text-secondary);
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:600;
+  transition:all 0.2s;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.toggle-btn.active{
+  background:var(--a);
+  color:#000;
+  font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+}
+.toggle-btn:hover:not(.active){
+  background:rgba(255,255,255,0.05);
+}
+
+/* Leverage Slider */
+.range-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:8px;
+  background:var(--bg3);
+  border-radius:8px;
+  border:1px solid var(--border);
+}
+input[type="range"]{
+  flex:1;
+  accent-color:var(--a);
+  height:5px;
+  cursor:pointer;
+  border-radius:3px;
+}
+.lev-val{
+  min-width:50px;
+  text-align:center;
+  padding:6px 8px;
+  background:var(--border);
+  border-radius:6px;
+  font-weight:700;
+  color:var(--a);
+  font-size:12px;
+}
+
+/* Buttons */
+.btn{
+  width:100%;
+  padding:12px;
+  color:#000;
+  font-weight:700;
+  cursor:pointer;
+  border:none;
+  border-radius:8px;
+  font-size:14px;
+  transition:all 0.2s;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.btn-primary{
+  background:var(--a);
+  color:#000;
+}
+.btn-primary:hover{
+  filter:brightness(1.1);
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(240,185,11,0.2);
+}
+.btn-secondary{
+  background:var(--bg3);
+  color:var(--t);
+  border:1px solid var(--border);
+}
+.btn-secondary:hover{
+  border-color:var(--a);
+  color:var(--a);
+}
+.btn-group{
+  display:flex;
+  gap:12px;
+}
+
+/* Preset Status */
+#presetStatus{
+  padding:12px;
+  background:rgba(240,185,11,0.1);
+  border-radius:8px;
+  border-left:3px solid var(--a);
+}
+#presetStatusName{font-weight:700;color:var(--a);font-size:14px;margin-bottom:2px;}
+#presetStatusNote{font-size:12px;color:var(--text-secondary);}
+#presetStatus button{
+  width:100%;
+  margin-top:10px;
+  padding:6px 8px;
+  font-size:12px;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  color:var(--t);
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:600;
+  transition:all 0.2s;
+}
+#presetStatus button:hover{background:var(--red);color:#fff; border-color:var(--red);}
+
+/* Preset List */
+#presetsWrapper {
+    height: 100%;
+}
+.presets-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    max-height: 400px; /* Or other desired height */
+    overflow-y: auto;
+    padding-right: 8px; /* For scrollbar */
+}
+.preset-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px;
+  border-radius:8px;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  gap:12px;
+  transition:all 0.2s;
+}
+.preset-item:hover{background:#252525;border-color:var(--a);}
+.preset-meta{flex:1;min-width:0;}
+.preset-name{font-weight:600;color:var(--a);font-size:14px;}
+.preset-note{color:var(--text-secondary);font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.preset-time{color:#6c6c72;font-size:11px;margin-top:4px;}
+.preset-actions{display:flex;gap:8px;}
+.preset-actions button{
+  padding:7px 10px;
+  border-radius:6px;
+  background:var(--bg);
+  color:var(--t);
+  border:1px solid var(--border);
+  cursor:pointer;
+  font-weight:600;
+  font-size:12px;
+  transition:all 0.2s;
+}
+.preset-actions button:hover{background:var(--a);color:#000;border-color:var(--a);}
+
+/* --- RESULT SECTION --- */
+.result{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:var(--spacing);
+}
+.res-title{
+  color:var(--a);
+  font-weight:600;
+  font-size:16px;
+  margin-bottom:var(--spacing);
+  text-transform:none;
+  letter-spacing:0;
+}
+.res-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  font-size:12px;
+}
+.res-item{
+  background:var(--c); /* Original color */
+  padding:12px;
+  border-radius:8px;
+  border-left:3px solid var(--a);
+  transition:all 0.2s;
+}
+.res-item-label{
+  color:var(--text-secondary);
+  font-size:11px;
+  font-weight:500;
+  text-transform:none;
+  letter-spacing:0;
+  margin-bottom:4px;
+}
+.res-item-value{
+  font-weight:700;
+  font-size:15px;
+  color:var(--t);
+}
+/* Keep result item color variations */
+.res-item.danger .res-item-value{color:var(--red)}
+.res-item.success .res-item-value{color:var(--green)}
+.res-item.entry{background:rgba(72,187,120,0.12);border-left-color:#48bb78}
+.res-item.sl{background:rgba(246,70,93,0.12);border-left-color:#f6465d}
+.res-item.risk{background:rgba(246,70,93,0.15);border-left-color:#f6465d}
+.res-item.position-value{background:rgba(72,187,120,0.15);border-left-color:#48bb78}
+.res-item.margin-used{background:rgba(240,185,11,0.12);border-left-color:#f0b90b}
+.res-item.risk-margin{background:rgba(240,185,11,0.15);border-left-color:#f0b90b}
+.res-item.take-profit{background:rgba(72,187,120,0.12);border-left-color:#48bb78}
+
+.direction{display:flex;gap:12px;margin-bottom:12px;}
+.direction-badge{
+  flex:1;
+  padding:12px;
+  border-radius:8px;
+  text-align:center;
+  font-weight:700;
+  font-size:14px;
+  border:1.5px solid;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+.long-badge{background:rgba(72,187,120,0.1);color:var(--green);border-color:var(--green);}
+.short-badge{background:rgba(246,70,93,0.1);color:var(--red);border-color:var(--red);}
+
+.rr-good, .rr-bad{
+  padding:10px 12px;
+  border-radius:8px;
+  font-weight:700;
+  border-left:3px solid;
+  text-align:center;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.4px;
+  grid-column:1/-1;
+}
+.rr-good{background:rgba(72,187,120,0.1);color:var(--green);border-left-color:var(--green);}
+.rr-bad{background:rgba(246,70,93,0.1);color:var(--red);border-left-color:var(--red);}
+
+.warning-high-risk{
+  background:rgba(246,70,93,0.2);
+  border:1px solid var(--red);
+  padding:12px;
+  border-radius:8px;
+  margin-top:12px;
+  text-align:center;
+  color:var(--red);
+  font-weight:600;
+  font-size:13px;
+  grid-column:1/-1;
+}
+
+/* Responsive */
+@media (max-width: 900px){ /* Breakpoint for stacking */
+  .main-grid {
+    grid-template-columns: 1fr; /* Stack to single column */
+  }
+  .res-grid{
+    grid-template-columns:1fr 1fr; /* Keep 2 columns in results on tablet */
+  }
+}
+
+@media (max-width:600px){
+  .container{padding:16px 8px; gap:16px;}
+  h2{font-size:22px;}
+  .subtitle{font-size:13px;}
+  .card{padding:12px; gap:12px;}
+  .res-grid{grid-template-columns:1fr;} /* Single column on small phones */
+  .btn{padding:12px; font-size:13px;}
+  .toggle-btn{font-size:11px;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  
+  <div class="header">
+    <h2>📊 Position Calculator</h2>
+    <div class="subtitle">Professional Position Sizing</div>
+    <div id="currentPresetDisplayWrapper" style="margin-top:12px;">
+      <span id="currentPresetDisplay"><span>Preset:</span> None</span>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <!-- Top-Left: Calculator -->
+    <div class="card">
+      <div class="card-title">Calculation</div>
+      <div class="form-group">
+        <label for="acc">Account Balance (USDT)</label>
+        <input type="number" id="acc" placeholder="e.g., 1000" oninput="saveData(); detectAndCalc()">
+      </div>
+      <div class="form-group">
+        <label>Risk Type</label>
+        <div class="toggle-group">
+          <button class="toggle-btn active" onclick="setRiskType('p', this)">% Risk</button>
+          <button class="toggle-btn" onclick="setRiskType('a', this)">Fixed Amount</button>
+        </div>
+        <div id="riskInputs">
+          <input type="number" id="rp" placeholder="e.g., 1.5" oninput="saveData(); detectAndCalc()">
+          <input type="number" id="ra" placeholder="e.g., 15" oninput="saveData(); detectAndCalc()" style="display:none">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="e">Entry Price</label>
+        <input type="number" id="e" placeholder="e.g., 30000" oninput="saveData(); detectAndCalc()">
+      </div>
+      <div class="form-group">
+        <label>Stop Loss (SL)</label>
+        <div class="toggle-group">
+          <button class="toggle-btn active" onclick="setSLType('p', this)">Price</button>
+          <button class="toggle-btn" onclick="setSLType('pp', this)">% of Entry</button>
+          <button class="toggle-btn" onclick="setSLType('pm', this)">% of Margin</button>
+        </div>
+        <div id="slInputs">
+          <input type="number" id="sp" placeholder="e.g., 29800" oninput="saveData(); detectAndCalc()">
+          <input type="number" id="spp" placeholder="SL % from Entry" oninput="saveData(); detectAndCalc()" style="display:none">
+          <input type="number" id="spm" placeholder="SL % from Margin" oninput="saveData(); detectAndCalc()" style="display:none">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Take Profit (TP) (Optional)</label>
+        <div class="toggle-group">
+          <button class="toggle-btn active" onclick="setTPType('p', this)">Price</button>
+          <button class="toggle-btn" onclick="setTPType('pp', this)">% of Entry</button>
+          <button class="toggle-btn" onclick="setTPType('pm', this)">% of Margin</button>
+        </div>
+        <div id="tpInputs">
+          <input type="number" id="tp" placeholder="e.g., 31000" oninput="saveData(); detectAndCalc()">
+          <input type="number" id="tpp" placeholder="TP % from Entry" oninput="saveData(); detectAndCalc()" style="display:none">
+          <input type="number" id="tpm" placeholder="TP % from Margin" oninput="saveData(); detectAndCalc()" style="display:none">
+        </div>
+      </div>
+      <div class="form-group">
+          <label>R:R Presets</label>
+          <div class="toggle-group" id="rrPresetContainer">
+              <button class="toggle-btn" onclick="setRRPreset(1, this)">1:1</button>
+              <button class="toggle-btn" onclick="setRRPreset(2, this)">1:2</button>
+              <button class="toggle-btn" onclick="setRRPreset(3, this)">1:3</button>
+              <input id="customRR" type="number" step="0.1" min="0.01" placeholder="Custom" style="width:80px; text-align:center; flex:0.8; background:var(--bg3); color:var(--t); border:none; border-radius:6px;" oninput="clearActiveRRPreset()" />
+              <button class="toggle-btn" id="applyCustomRR" onclick="applyCustomRR()" style="flex:0.8">Apply</button>
+          </div>
+      </div>
+      <div class="form-group">
+        <label for="lev">Leverage</label>
+        <div class="range-row">
+          <input type="range" id="lev" min="1" max="125" step="1" value="10" oninput="saveData(); onLevInput(this.value)">
+          <div class="lev-val" id="levVal">10x</div>
+        </div>
+      </div>
+      <div class="btn-group" style="margin-top:12px;">
+          <button class="btn btn-primary" onclick="calc()">⚡ Calculate</button>
+      </div>
+    </div>
+
+    <!-- Top-Right: Results -->
+    <div class="result card" id="res">
+      <div style="opacity:0.5;text-align:center;color:var(--text-secondary);font-size:13px;">Enter data to see results</div>
+    </div>
+
+    <!-- Bottom-Left: Preset Manager -->
+    <div class="card">
+      <div class="card-title">💾 Preset Manager</div>
+      <div id="presetStatus" style="display:none;">
+        <div style="font-size:12px; color:var(--text-secondary); text-transform:uppercase; margin-bottom:4px;">📌 Editing Preset</div>
+        <div id="presetStatusName">-</div>
+        <div id="presetStatusNote"></div>
+        <button onclick="discardPresetEdit()">✖ Discard Changes</button>
+      </div>
+      <div class="form-group">
+        <label for="presetName">Preset Name</label>
+        <input type="text" id="presetName" placeholder="e.g., 'BTC Short 10x'">
+      </div>
+      <div class="form-group">
+        <label for="presetNote">Note (optional)</label>
+        <input type="text" id="presetNote" placeholder="Description or context">
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-secondary" id="savePresetBtn" onclick="saveOrUpdatePreset()">💾 Save</button>
+        <button class="btn btn-secondary" id="saveNewBtn" style="display:none;" onclick="saveAsNewPreset()">➕ Save as New</button>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="renderPresets()" id="showPresetsBtn">🔄 Refresh List</button>
+        <button class="btn btn-secondary" onclick="clearPresetForm()">✖ Clear Form</button>
+      </div>
+    </div>
+
+    <!-- Bottom-Right: Saved Presets -->
+    <div id="presetsWrapper" class="card">
+        <!-- Presets will be rendered here by JS -->
+    </div>
+  </div>
+
+</div>
+
+<script>
+let riskMode = 'p', slMode = 'p', tpMode = 'p';
+
+function saveData() {
+  const data = {
+    acc: document.getElementById('acc').value,
+    riskMode: riskMode,
+    rp: document.getElementById('rp').value,
+    ra: document.getElementById('ra').value,
+    e: document.getElementById('e').value,
+    slMode: slMode,
+    sp: document.getElementById('sp').value,
+    spp: document.getElementById('spp').value,
+    spm: document.getElementById('spm').value,
+    tpMode: tpMode,
+    tp: document.getElementById('tp').value,
+    tpp: document.getElementById('tpp').value,
+    tpm: document.getElementById('tpm').value,
+    lev: document.getElementById('lev').value
+  };
+  localStorage.setItem('positionData', JSON.stringify(data));
+}
+
+function loadData() {
+  const data = JSON.parse(localStorage.getItem('positionData'));
+  if(!data) return;
+  
+  document.getElementById('acc').value = data.acc || '';
+  document.getElementById('rp').value = data.rp || '';
+  document.getElementById('ra').value = data.ra || '';
+  document.getElementById('e').value = data.e || '';
+  document.getElementById('sp').value = data.sp || '';
+  document.getElementById('spp').value = data.spp || '';
+  document.getElementById('spm').value = data.spm || '';
+  document.getElementById('tp').value = data.tp || '';
+  document.getElementById('tpp').value = data.tpp || '';
+  document.getElementById('tpm').value = data.tpm || '';
+  document.getElementById('lev').value = data.lev || 10;
+  document.getElementById('levVal').textContent = (data.lev || 10) + 'x';
+  
+  if(data.riskMode) {
+    riskMode = data.riskMode;
+    updateRiskInputs();
+    const btns = document.querySelector('.card .toggle-group').querySelectorAll('.toggle-btn');
+    btns.forEach((b, i) => {
+      b.classList.remove('active');
+      if((riskMode === 'p' && i === 0) || (riskMode === 'a' && i === 1)) {
+        b.classList.add('active');
+      }
+    });
+  }
+  
+  if(data.slMode) {
+    slMode = data.slMode;
+    updateSLInputs();
+    const btns = document.querySelectorAll('#slInputs').parentElement.querySelectorAll('.toggle-btn');
+    btns.forEach((b, i) => {
+      b.classList.remove('active');
+      if((slMode === 'p' && i === 0) || (slMode === 'pp' && i === 1) || (slMode === 'pm' && i === 2)) {
+        b.classList.add('active');
+      }
+    });
+  }
+  
+  if(data.tpMode) {
+    tpMode = data.tpMode;
+    updateTPInputs();
+    const btns = document.querySelectorAll('#tpInputs').parentElement.querySelectorAll('.toggle-btn');
+    btns.forEach((b, i) => {
+      b.classList.remove('active');
+      if((tpMode === 'p' && i === 0) || (tpMode === 'pp' && i === 1) || (tpMode === 'pm' && i === 2)) {
+        b.classList.add('active');
+      }
+    });
+  }
+}
+
+function setRiskType(type, btn) {
+  riskMode = type;
+  updateRiskInputs();
+  btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  saveData();
+  detectAndCalc();
+}
+
+function setSLType(type, btn) {
+  slMode = type;
+  updateSLInputs();
+  btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  saveData();
+  detectAndCalc();
+}
+
+function setTPType(type, btn) {
+  tpMode = type;
+  updateTPInputs();
+  btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  saveData();
+  detectAndCalc();
+}
+
+function clearActiveRRPreset() {
+    const rrContainer = document.getElementById('rrPresetContainer');
+    rrContainer.querySelectorAll('.toggle-btn').forEach(b => {
+        if (b.id !== 'applyCustomRR') b.classList.remove('active');
+    });
+}
+
+function setRRPreset(ratio, btn) {
+  // Deactivate other RR preset buttons and clear custom input
+  if (btn) {
+    const rrContainer = btn.parentElement;
+    rrContainer.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('customRR').value = '';
+  }
+
+  const e = parseFloat(document.getElementById('e').value);
+  const sp = parseFloat(document.getElementById('sp').value);
+  
+  if (isNaN(e) || isNaN(sp)) {
+    alert('Please enter Entry and Stop Loss prices to calculate R:R.');
+    if (btn) btn.classList.remove('active'); // Deselect if calculation fails
+    return;
+  }
+  
+  const diff = Math.abs(e - sp);
+  const isLong = sp < e;
+  
+  const tp = isLong ? e + (diff * ratio) : e - (diff * ratio);
+  
+  tpMode = 'p';
+  updateTPInputs();
+  document.getElementById('tp').value = tp.toFixed(5);
+  
+  const tpContainer = document.getElementById('tpInputs').parentElement;
+  const tpButtons = tpContainer.querySelector('.toggle-group').querySelectorAll('.toggle-btn');
+  tpButtons.forEach(b => b.classList.remove('active'));
+  tpButtons[0].classList.add('active');
+
+  saveData();
+  setTimeout(() => detectAndCalc(), 50);
+}
+
+function updateRiskInputs() {
+  document.getElementById('rp').style.display = riskMode === 'p' ? 'block' : 'none';
+  document.getElementById('ra').style.display = riskMode === 'a' ? 'block' : 'none';
+}
+
+function updateSLInputs() {
+  document.getElementById('sp').style.display = slMode === 'p' ? 'block' : 'none';
+  document.getElementById('spp').style.display = slMode === 'pp' ? 'block' : 'none';
+  document.getElementById('spm').style.display = slMode === 'pm' ? 'block' : 'none';
+}
+
+function updateTPInputs() {
+  document.getElementById('tp').style.display = tpMode === 'p' ? 'block' : 'none';
+  document.getElementById('tpp').style.display = tpMode === 'pp' ? 'block' : 'none';
+  document.getElementById('tpm').style.display = tpMode === 'pm' ? 'block' : 'none';
+}
+
+function onLevInput(v) {
+  document.getElementById('levVal').textContent = v + 'x';
+  detectAndCalc();
+}
+
+function detectAndCalc() {
+  setTimeout(calc, 100);
+}
+
+// ---------- Preset storage and UI ----------
+function getPresets() {
+  try {
+    const raw = localStorage.getItem('positionPresets');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    console.error('Failed to parse presets', e);
+    return [];
+  }
+}
+
+function savePresets(arr) {
+  localStorage.setItem('positionPresets', JSON.stringify(arr.sort((a, b) => b.ts - a.ts)));
+}
+
+function renderPresets() {
+  let wrapper = document.getElementById('presetsWrapper');
+  wrapper.innerHTML = ''; 
+  
+  const title = document.createElement('div');
+  title.className = 'card-title';
+  title.textContent = '💾 Saved Presets';
+  wrapper.appendChild(title);
+
+  const container = document.createElement('div');
+  container.id = 'presetsContainer';
+  container.className = 'presets-list';
+  wrapper.appendChild(container);
+
+  const presets = getPresets();
+  
+  if(presets.length === 0) {
+    container.innerHTML = '<div style="opacity:0.6;color:var(--text-secondary);font-size:13px;padding:8px;text-align:center;">No saved presets yet</div>';
+    return;
+  }
+
+  presets.forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'preset-item';
+
+    const meta = document.createElement('div');
+    meta.className = 'preset-meta';
+    const name = document.createElement('div');
+    name.className = 'preset-name';
+    name.textContent = p.name;
+    const note = document.createElement('div');
+    note.className = 'preset-note';
+    note.textContent = p.note || '';
+    const time = document.createElement('div');
+    time.className = 'preset-time';
+    time.textContent = new Date(p.ts).toLocaleString();
+
+    meta.appendChild(name);
+    if(p.note) meta.appendChild(note);
+    meta.appendChild(time);
+
+    const actions = document.createElement('div');
+    actions.className = 'preset-actions';
+
+    const loadBtn = document.createElement('button');
+    loadBtn.textContent = 'Load';
+    loadBtn.onclick = () => { loadPreset(p.name); };
+
+    const delBtn = document.createElement('button');
+    delBtn.textContent = 'Delete';
+    delBtn.style.color = 'var(--red)';
+    delBtn.onclick = () => {
+      if(confirm('Delete preset "' + p.name + '"?')) deletePreset(p.name);
+    };
+
+    actions.appendChild(loadBtn);
+    actions.appendChild(delBtn);
+
+    item.appendChild(meta);
+    item.appendChild(actions);
+    container.appendChild(item);
+  });
+}
+
+let editingPreset = null;
+
+function saveOrUpdatePreset() {
+  if(editingPreset) {
+    updateExistingPreset();
+  } else {
+    saveNewPreset();
+  }
+}
+
+function saveNewPreset() {
+  let name = document.getElementById('presetName').value.trim();
+  const note = document.getElementById('presetNote').value.trim();
+  if(!name) {
+    name = generatePresetName();
+  }
+
+  const presets = getPresets();
+  const existing = presets.find(p => p.name === name);
+
+  if(existing) {
+    if(!confirm(`Preset "${name}" already exists. Overwrite?`)) return;
+    const idx = presets.findIndex(p => p.name === name);
+    presets[idx] = { name, note, ts: Date.now(), data: getPresetData() };
+  } else {
+    presets.push({ name, note, ts: Date.now(), data: getPresetData() });
+  }
+  savePresets(presets);
+  
+  renderPresets();
+  saveData();
+  detectAndCalc();
+  clearPresetForm();
+}
+
+function generatePresetName() {
+  const eVal = document.getElementById('e').value || 'Entry';
+  const levVal = document.getElementById('lev').value || 'Lev';
+  const now = new Date();
+  return `Preset @${eVal} (${levVal}x) - ${now.toLocaleDateString()}`;
+}
+
+function applyCustomRR() {
+  const raw = document.getElementById('customRR').value;
+  const v = parseFloat(raw);
+  if(isNaN(v) || v <= 0) { alert('Please enter a valid R:R value (e.g. 1.5)'); return; }
+  
+  // Deactivate other RR preset buttons
+  clearActiveRRPreset();
+  
+  setRRPreset(v, null); // Pass null for the button
+}
+
+function clearPresetForm() {
+  document.getElementById('presetName').value = '';
+  document.getElementById('presetNote').value = '';
+  editingPreset = null;
+  document.getElementById('savePresetBtn').innerHTML = '💾 Save';
+  document.getElementById('saveNewBtn').style.display = 'none';
+  document.getElementById('presetStatus').style.display = 'none';
+  document.getElementById('currentPresetDisplay').innerHTML = '<span>Preset:</span> None';
+}
+
+function loadPreset(name) {
+  const presets = getPresets();
+  const p = presets.find(x => x.name === name);
+  if(!p) { alert('Preset not found'); return; }
+  
+  const d = p.data || {};
+  document.getElementById('acc').value = d.acc || '';
+  riskMode = d.riskMode || 'p'; updateRiskInputs();
+  document.getElementById('rp').value = d.rp || '';
+  document.getElementById('ra').value = d.ra || '';
+  document.getElementById('e').value = d.e || '';
+  slMode = d.slMode || 'p'; updateSLInputs();
+  document.getElementById('sp').value = d.sp || '';
+  document.getElementById('spp').value = d.spp || '';
+  document.getElementById('spm').value = d.spm || '';
+  tpMode = d.tpMode || 'p'; updateTPInputs();
+  document.getElementById('tp').value = d.tp || '';
+  document.getElementById('tpp').value = d.tpp || '';
+  document.getElementById('tpm').value = d.tpm || '';
+  document.getElementById('lev').value = d.lev || 10;
+  document.getElementById('levVal').textContent = (d.lev || 10) + 'x';
+
+  document.getElementById('presetName').value = p.name;
+  document.getElementById('presetNote').value = p.note || '';
+  editingPreset = p.name;
+  document.getElementById('savePresetBtn').innerHTML = '✎ Update';
+  document.getElementById('saveNewBtn').style.display = 'flex';
+  
+  document.getElementById('presetStatus').style.display = 'block';
+  document.getElementById('presetStatusName').textContent = name;
+  document.getElementById('presetStatusNote').textContent = p.note ? `Note: ${p.note}` : '(no note)';
+  document.getElementById('currentPresetDisplay').innerHTML = `<span>Preset:</span> ${name}`;
+
+  saveData();
+  detectAndCalc();
+  
+  document.querySelector('.container').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deletePreset(name) {
+  let presets = getPresets();
+  presets = presets.filter(p => p.name !== name);
+  savePresets(presets);
+  renderPresets();
+}
+
+function discardPresetEdit() {
+  clearPresetForm();
+}
+
+function updateExistingPreset() {
+  const newName = document.getElementById('presetName').value.trim();
+  const note = document.getElementById('presetNote').value.trim();
+  
+  const presets = getPresets();
+  const idx = presets.findIndex(p => p.name === editingPreset);
+  if(idx === -1) { alert('Error: Original preset not found.'); return; }
+
+  if (newName !== editingPreset && presets.some(p => p.name === newName)) {
+    alert(`Error: A preset named "${newName}" already exists.`);
+    return;
+  }
+  
+  presets[idx] = { name: newName, note, ts: Date.now(), data: getPresetData() };
+  savePresets(presets);
+  
+  alert(`✓ Preset "${newName}" updated successfully!`);
+  
+  editingPreset = newName;
+  loadPreset(newName);
+  renderPresets();
+}
+
+function saveAsNewPreset() {
+  let name = document.getElementById('presetName').value.trim();
+  const note = document.getElementById('presetNote').value.trim();
+  
+  if(!name || name === editingPreset) {
+    name = generatePresetName();
+  }
+
+  const presets = getPresets();
+  const existing = presets.find(p => p.name === name);
+
+  if(existing) {
+    if(!confirm('A preset with this name already exists. Overwrite?')) return;
+    const idx = presets.findIndex(p => p.name === name);
+    presets[idx] = { name, note, ts: Date.now(), data: getPresetData() };
+  } else {
+    presets.push({ name, note, ts: Date.now(), data: getPresetData() });
+  }
+  savePresets(presets);
+
+  renderPresets();
+  clearPresetForm();
+  loadPreset(name);
+}
+
+function getPresetData() {
+  return {
+    acc: document.getElementById('acc').value,
+    riskMode: riskMode,
+    rp: document.getElementById('rp').value,
+    ra: document.getElementById('ra').value,
+    e: document.getElementById('e').value,
+    slMode: slMode,
+    sp: document.getElementById('sp').value,
+    spp: document.getElementById('spp').value,
+    spm: document.getElementById('spm').value,
+    tpMode: tpMode,
+    tp: document.getElementById('tp').value,
+    tpp: document.getElementById('tpp').value,
+    tpm: document.getElementById('tpm').value,
+    lev: document.getElementById('lev').value
+  };
+}
+
+function calc() {
+  const acc = parseFloat(document.getElementById('acc').value);
+  const e = parseFloat(document.getElementById('e').value);
+  const lev = parseFloat(document.getElementById('lev').value);
+
+  if(isNaN(acc) || isNaN(e) || isNaN(lev)) {
+    document.getElementById('res').innerHTML = '<div class="res-title">Results</div><div style="opacity:0.5;text-align:center;color:var(--text-secondary);font-size:13px;">Enter data to see results</div>';
+    return;
+  }
+
+  let ra = 0;
+  if(riskMode === 'p') {
+    const rp = parseFloat(document.getElementById('rp').value);
+    if(isNaN(rp)) return;
+    ra = acc * rp / 100;
+  } else {
+    ra = parseFloat(document.getElementById('ra').value);
+    if(isNaN(ra)) return;
+  }
+
+  let sl = 0;
+  if(slMode === 'p') {
+    sl = parseFloat(document.getElementById('sp').value);
+    if(isNaN(sl)) return;
+  } else if(slMode === 'pp') {
+    const spp = parseFloat(document.getElementById('spp').value);
+    if(isNaN(spp)) return;
+    sl = e * (1 - spp / 100);
+  } else {
+    const spm = parseFloat(document.getElementById('spm').value);
+    if(isNaN(spm)) return;
+    sl = e - (ra * (spm / 100));
+  }
+
+  const diff = Math.abs(e - sl);
+  if(diff === 0) {
+    document.getElementById('res').innerHTML = '<div class="res-title" style="color:var(--red);">⚠️ Error: SL and Entry are the same</div>';
+    return;
+  }
+
+  const size = ra / diff;
+  const val = size * e;
+  const margin = val / lev;
+  const isLong = sl < e;
+
+  let tp = 0, tpError = '';
+  const tpVal = document.getElementById('tp').value;
+  if (tpVal) {
+    if(tpMode === 'p') {
+      tp = parseFloat(tpVal);
+      if(isLong && tp <= e) { tpError = '⚠️ LONG: TP must be > Entry'; tp = 0; }
+      else if(!isLong && tp >= e) { tpError = '⚠️ SHORT: TP must be < Entry'; tp = 0; }
+    } else if(tpMode === 'pp') {
+      const tpp = parseFloat(document.getElementById('tpp').value);
+      if(!isNaN(tpp)) tp = isLong ? e * (1 + tpp / 100) : e * (1 - tpp / 100);
+    } else if(tpMode === 'pm') {
+      const tpm = parseFloat(document.getElementById('tpm').value);
+      if(!isNaN(tpm)) tp = isLong ? e + (ra * (tpm / 100)) : e - (ra * (tpm / 100));
+    }
+  }
+
+  const percentSlEntry = (diff / e) * 100;
+  const percentSlMargin = margin === 0 ? 0 : (ra / margin) * 100;
+  const maxLoss = -ra;
+  let maxGain = 0;
+  if(tp > 0 && !tpError) {
+    maxGain = isLong ? (tp - e) * size : (e - tp) * size;
+  }
+
+  const rrRatio = (tp > 0 && !tpError) ? (Math.abs(maxGain) / Math.abs(maxLoss)).toFixed(2) : 'N/A';
+  const rrBad = (tp > 0 && !tpError) && parseFloat(rrRatio) < 1;
+  const liqPrice = isLong ? e - (margin / size) : e + (margin / size);
+  const isHighRisk = percentSlMargin > 90;
+
+  const dirBadge = isLong ? '<div class="direction-badge long-badge">📈 LONG</div>' : '<div class="direction-badge short-badge">📉 SHORT</div>';
+
+  let html = `<div class="res-title">✓ Results</div>
+<div class="direction">${dirBadge}</div>
+<div class="res-grid">
+  <div class="res-item entry"><div class="res-item-label">Entry</div><div class="res-item-value">${e.toFixed(4)}</div></div>
+  <div class="res-item"><div class="res-item-label">Leverage</div><div class="res-item-value">${lev}x</div></div>
+  <div class="res-item position-value"><div class="res-item-label">Position Value</div><div class="res-item-value">$${val.toFixed(2)}</div></div>`;
+
+  if(tp > 0 && !tpError) {
+    html += `
+  <div class="res-item take-profit"><div class="res-item-label">Take Profit</div><div class="res-item-value">${tp.toFixed(4)}</div></div>`;
+  }
+
+  html += `
+  <div class="res-item sl"><div class="res-item-label">Stop Loss</div><div class="res-item-value">${sl.toFixed(4)}</div></div>
+  <div class="res-item risk"><div class="res-item-label">Risk Amount</div><div class="res-item-value">-$${ra.toFixed(2)}</div></div>
+  <div class="res-item margin-used"><div class="res-item-label">Margin Used</div><div class="res-item-value">$${margin.toFixed(2)}</div></div>
+  <div class="res-item risk-margin ${isHighRisk ? 'danger' : ''}"><div class="res-item-label">Risk / Margin</div><div class="res-item-value">${percentSlMargin.toFixed(2)}%</div></div>
+  <div class="res-item"><div class="res-item-label">SL Distance</div><div class="res-item-value">${percentSlEntry.toFixed(2)}%</div></div>`;
+
+  if(tpError) {
+    html += `<div class="res-item" style="grid-column:1/-1;background:rgba(246,70,93,0.12);border-left-color:var(--red);color:var(--red);border-left:2px solid;">${tpError}</div>`;
+  }
+
+  if(tp > 0 && !tpError) {
+    const rrClass = rrBad ? 'rr-bad' : 'rr-good';
+    const percentTpEntry = (Math.abs(tp - e) / e) * 100;
+    html += `
+  <div class="res-item success"><div class="res-item-label">TP Distance</div><div class="res-item-value">${percentTpEntry.toFixed(2)}%</div></div>
+  <div class="${rrClass}">R:R Ratio 1:${rrRatio} ${rrBad ? '⚠️' : '✓'}</div>
+  <div class="res-item success"><div class="res-item-label">Max Profit</div><div class="res-item-value">+$${maxGain.toFixed(2)}</div></div>
+  <div class="res-item danger"><div class="res-item-label">Max Loss</div><div class="res-item-value">-$${maxLoss.toFixed(2)}</div></div>`;
+  } else {
+    html += `<div class="res-item danger" style="grid-column:1/-1;"><div class="res-item-label">Max Loss</div><div class="res-item-value">-$${maxLoss.toFixed(2)}</div></div>`;
+  }
+
+  html += `<div class="res-item" style="grid-column:1/-1;background:rgba(240,185,11,0.12);border-left-color:var(--a);border-left:2px solid;"><div class="res-item-label">Est. Liquidation Price</div><div class="res-item-value" style="color:var(--a);">${liqPrice.toFixed(4)}</div></div></div>`;
+
+  if(isHighRisk) {
+    html += `<div class="warning-high-risk">⚠️ HIGH RISK: Risk/Margin is over 90%</div>`;
+  }
+
+  document.getElementById('res').innerHTML = html;
+}
+
+window.onload = () => {
+  loadData();
+  calc();
+  renderPresets(); // Render presets on load
+  document.getElementById('currentPresetDisplay').innerHTML = '<span>Preset:</span> None';
+};
+</script>
+</html>
