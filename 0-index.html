@@ -15,7 +15,7 @@ body{background:#121212;color:#e8e8e8;line-height:1.5;min-height:100vh;padding:1
   --radius:12px;--gap:16px;
 }
 
-.container{max-width:1100px;margin:0 auto;display:grid;gap:var(--gap);grid-template-columns:1fr;grid-template-areas:"calc""res""preset""list"}
+.container{max-width:1400px;margin:0 auto;display:grid;gap:var(--gap);grid-template-columns:1fr;grid-template-areas:"calc""res""presets"}
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:var(--gap)}
 .card-title{font-weight:700;font-size:16px;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:12px;color:var(--accent)}
 
@@ -80,8 +80,7 @@ input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(24
 .btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
 .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
 
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
-.grid-2 > * {min-width:0}
+
 
 .result .res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px}
 .res-item{background:#111;padding:12px;border-radius:8px;border-left:4px solid var(--accent)}
@@ -114,10 +113,10 @@ input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(24
 #currentPreset span{color:var(--text2)}
 
 @media(min-width:768px){
-  .container{grid-template-columns:1fr 1fr;grid-template-areas:"calc calc""res res""preset list"}
+  .container{grid-template-columns:1fr 340px;grid-template-areas:"calc presets""res presets";align-items:start}
 }
 @media(min-width:1100px){
-  .container{grid-template-columns:repeat(4,1fr);grid-template-areas:"calc calc res res""preset preset list list"}
+  .container{grid-template-columns:380px 1fr 340px;grid-template-areas:"calc res presets";align-items:start}
 }
 
 /* Tối ưu cho màn hình rất nhỏ */
@@ -136,8 +135,7 @@ input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(24
   <!-- Calculator -->
   <div class="card" style="grid-area:calc">
     <div class="card-title">Calculation</div>
-    <div class="grid-2">
-      <div>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
         <div class="form-group"><label>Account Balance (USDT)</label><input type="number" id="acc" placeholder="1000" class="calc-input-area"></div>
         <div class="form-group">
           <label>Risk Type</label>
@@ -160,8 +158,6 @@ input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(24
           <input type="number" id="spp" placeholder="% from Entry" class="sl-inp" style="display:none">
           <input type="number" id="spm" placeholder="% from Margin" class="sl-inp" style="display:none">
         </div>
-      </div>
-      <div>
         <div class="form-group">
           <label>Take Profit (Optional)</label>
           <div class="toggle-group">
@@ -188,10 +184,19 @@ input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(24
             <input type="range" id="lev" min="1" max="125" value="10">
             <div class="lev-val" id="levVal">10x</div>
           </div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
+            <button class="toggle-btn" data-lev="5">5x</button>
+            <button class="toggle-btn" data-lev="10">10x</button>
+            <button class="toggle-btn" data-lev="20">20x</button>
+            <button class="toggle-btn" data-lev="30">30x</button>
+            <button class="toggle-btn" data-lev="40">40x</button>
+            <button class="toggle-btn" data-lev="50">50x</button>
+            <button class="toggle-btn" data-lev="100">100x</button>
+            <button class="toggle-btn" data-lev="125">125x</button>
+          </div>
         </div>
         <button class="btn btn-primary" style="margin-top:12px" onclick="calc()">Calculate</button>
       </div>
-    </div>
   </div>
 
   <!-- Results -->
@@ -199,23 +204,26 @@ input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(24
     <div style="text-align:center;color:var(--text2);opacity:0.6">Enter data to see results</div>
   </div>
 
-  <!-- Preset Manager -->
-  <div class="card" style="grid-area:preset">
-    <div class="card-title">Preset Manager</div>
-    <input type="text" id="presetName" placeholder="Preset name" style="margin-bottom:8px">
-    <input type="text" id="presetNote" placeholder="Note (optional)" style="margin-bottom:12px">
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-secondary" id="saveBtn" onclick="savePreset()">Save</button>
-      <button class="btn btn-secondary" onclick="renderPresets()">Refresh</button>
-      <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+  <!-- Presets Column -->
+  <div style="grid-area: presets; display: flex; flex-direction: column; gap: var(--gap);">
+    <!-- Preset Manager -->
+    <div class="card">
+      <div class="card-title">Preset Manager</div>
+      <input type="text" id="presetName" placeholder="Preset name" style="margin-bottom:8px">
+      <input type="text" id="presetNote" placeholder="Note (optional)" style="margin-bottom:12px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-secondary" id="saveBtn" onclick="savePreset()">Save</button>
+        <button class="btn btn-secondary" onclick="renderPresets()">Refresh</button>
+        <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+      </div>
     </div>
-  </div>
 
-  <!-- Saved Presets -->
-  <div class="card" style="grid-area:list">
-    <div class="card-title">Saved Presets</div>
-    <div class="presets-list" id="presetList">
-      <div style="text-align:center;color:var(--text2);opacity:0.6;padding:20px">No presets yet</div>
+    <!-- Saved Presets -->
+    <div class="card">
+      <div class="card-title">Saved Presets</div>
+      <div class="presets-list" id="presetList">
+        <div style="text-align:center;color:var(--text2);opacity:0.6;padding:20px">No presets yet</div>
+      </div>
     </div>
   </div>
 </div>
@@ -289,6 +297,16 @@ document.getElementById('lev').oninput = e=>{
   els.levVal().textContent = e.target.value+'x'; 
   save(); calc(); 
 };
+
+document.querySelectorAll('button[data-lev]').forEach(btn => {
+  btn.onclick = e => {
+    const leverage = e.currentTarget.dataset.lev;
+    els.lev().value = leverage;
+    els.levVal().textContent = leverage + 'x';
+    save();
+    calc();
+  };
+});
 
 document.getElementById('applyRR').onclick = ()=>{ 
   const v = parseFloat(document.getElementById('customRR').value); 

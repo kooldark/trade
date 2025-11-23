@@ -2,505 +2,226 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Position Calculator</title>
+<title>Quick Position Calc</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
-body{background:#121212;color:#e8e8e8;line-height:1.5;min-height:100vh;padding:16px 12px}
+html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+body{background:#0d0d0d;color:#eee;line-height:1.4;min-height:100vh;padding:12px 8px}
 
 :root{
-  --bg:#121212;--bg2:#1c1c1e;--bg3:#2c2c2e;--border:#3a3a3c;
-  --text:#e8e8e8;--text2:#8e8e93;--accent:#f0b90b;--green:#48bb78;--red:#f6465d;
-  --radius:12px;--gap:16px;
+  --bg:#0d0d0d;--card:#1a1a1a;--border:#333;
+  --accent:#f0b90b;--green:#00ff9d;--red:#ff0066;--yellow:#ffff00;
+  --radius:16px;--gap:12px;
 }
 
-.container{max-width:1100px;margin:0 auto;display:grid;gap:var(--gap);grid-template-columns:1fr;grid-template-areas:"calc""res""preset""list"}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:var(--gap)}
-.card-title{font-weight:700;font-size:16px;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:12px;color:var(--accent)}
+.container{max-width:1100px;margin:0 auto;display:grid;gap:var(--gap);grid-template-columns:1fr}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow:hidden}
 
-.form-group{display:flex;flex-direction:column;gap:6px}
-label{font-size:13px;color:var(--text2);font-weight:500}
+h1{font-size:28px;font-weight:800;text-align:center;color:var(--accent);margin-bottom:8px}
+.input-imp{background:#333 !important;border:2px solid var(--accent) !important;font-size:18px !important;font-weight:700;padding:14px !important}
+input, button{font-size:16px !important}
+
+label{font-size:14px;color:#aaa;margin-bottom:4px;display:block}
 input[type=number],input[type=text]{
-  background:var(--bg3);color:var(--text);border:1px solid var(--border);padding:12px 14px;border-radius:8px;font-size:15px;transition:border .2s;
+  background:#222;color:#fff;border:1px solid #444;padding:12px 14px;border-radius:10px;transition:all .2s;
 }
-input:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(240,185,11,.15)}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(240,185,11,.3);outline:none}
 
-.toggle-group{display:flex;background:var(--bg3);border-radius:8px;padding:4px;border:1px solid var(--border);overflow:hidden}
-.toggle-btn{flex:1;padding:9px 6px;background:transparent;color:var(--text2);border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:.2s}
-.toggle-btn.active{background:var(--accent);color:#000;font-weight:700}
+.toggle-group{display:flex;background:#222;border-radius:10px;overflow:hidden;margin:6px 0}
+.toggle-btn{flex:1;padding:10px;font-size:13px;font-weight:600;color:#aaa;background:transparent;border:none;cursor:pointer}
+.toggle-btn.active{background:var(--accent);color:#000;font-weight:800}
 
-.range-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:var(--bg3);
-  padding:12px 14px;
-  border-radius:8px;
-  border:1px solid var(--border);
-}
-.range-row input[type=range]{
-  flex:1;
-  height:6px;
-  border-radius:3px;
-  background:#3a3a3c;
-  outline:none;
-  -webkit-appearance:none;
-}
-.range-row input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:18px;height:18px;
-  border-radius:50%;
-  background:var(--accent);
-  cursor:pointer;
-}
-.range-row input[type=range]::-moz-range-thumb{
-  width:18px;height:18px;
-  border-radius:50%;
-  background:var(--accent);
-  cursor:pointer;
-  border:none;
-}
-.lev-val{
-  min-width:54px;
-  text-align:center;
-  padding:6px 8px;
-  background:var(--border);
-  border-radius:6px;
-  font-weight:700;
-  color:var(--accent);
-  font-size:14px;
-  flex-shrink:0;
-  white-space:nowrap;
-}
+.range-row{display:flex;align-items:center;gap:12px;background:#222;padding:12px;border-radius:10px;margin:8px 0}
+#levVal{font-size:20px;font-weight:800;color:var(--accent);min-width:66px;text-align:center}
 
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 16px;border:none;border-radius:8px;font-weight:700;cursor:pointer;transition:.2s}
-.btn-primary{background:var(--accent);color:#000}
-.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
-.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
-.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:16px}
+.btn-calc{background:var(--accent);color:#000;flex:1}
+.btn-save{background:#333;color:var(--yellow);border:2px solid var(--yellow);padding:14px 16px}
 
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
-.grid-2 > * {min-width:0}
+.direction{display:grid;grid-template-columns:1fr 1fr;font-size:36px;font-weight:900;text-align:center;padding:20px 0;border-radius:var(--radius);margin:12px 0}
+.long{background:rgba(0,255,157,.2);color:var(--green);border:3px solid var(--green)}
+.short{background:rgba(255,0,102,.2);color:var(--red);border:3px solid var(--red)}
 
-.result .res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px}
-.res-item{background:#111;padding:12px;border-radius:8px;border-left:4px solid var(--accent)}
-.res-item-label{font-size:11px;color:var(--text2);margin-bottom:4px}
-.res-item-value{font-weight:700;font-size:15px}
-.long-badge{background:rgba(72,187,120,.15);color:var(--green);border:1.5px solid var(--green)}
-.short-badge{background:rgba(246,70,93,.15);color:var(--red);border:1.5px solid var(--red)}
-.direction-badge{padding:12px;border-radius:8px;text-align:center;font-weight:700;font-size:14px;text-transform:uppercase}
+.result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+.res-item{background:#111;padding:14px;border-radius:12px;font-size:15px}
+.res-label{font-size:12px;color:#888}
+.res-value{font-size:20px;font-weight:800;margin-top:4px}
+.highlight{color:var(--accent)}
 
-.res-entry { background: rgba(240, 185, 11, 0.15); }
-.res-sl    { background: rgba(246, 70, 93, 0.15); }
-.res-tp    { background: rgba(72, 187, 120, 0.15); }
-.res-leverage   { background: rgba(80, 130, 255, 0.15); }
-.res-pos-value  { background: rgba(218, 112, 214, 0.15); }
-.res-margin     { background: rgba(0, 191, 255, 0.15); }
-
-.calc-input-area {
-    background-color: rgba(240, 185, 11, 0.08) !important;
-}
-
-.presets-list{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto;padding-right:6px}
-.preset-item{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;gap:12px}
-.preset-name{font-weight:600;color:var(--accent);font-size:14px}
-.preset-note{font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.preset-time{font-size:11px;color:#777;margin-top:4px}
-.preset-actions button{padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer}
-.preset-actions button:hover{background:var(--accent);color:#000}
-
-#currentPreset{margin-top:8px;font-size:13px;color:var(--accent);text-align:center}
-#currentPreset span{color:var(--text2)}
+.warning{background:rgba(255,0,102,.25);color:var(--red);padding:16px;border-radius:12px;text-align:center;font-weight:700;font-size:18px;margin-top:12px}
 
 @media(min-width:768px){
-  .container{grid-template-columns:1fr 1fr;grid-template-areas:"calc calc""res res""preset list"}
-}
-@media(min-width:1100px){
-  .container{grid-template-columns:repeat(4,1fr);grid-template-areas:"calc calc res res""preset preset list list"}
-}
-
-/* Tối ưu cho màn hình rất nhỏ */
-@media (max-width: 380px) {
-  .range-row {padding:10px 12px;gap:8px;}
-  .lev-val {font-size:13px;min-width:50px;padding:5px 6px;}
-  .toggle-btn {font-size:11px;padding:8px 4px;}
+  .container{grid-template-columns:1fr 1fr;grid-template-areas:"input result""saved saved"}
+  #inputArea{grid-area:input}
+  #resultArea{grid-area:result}
+  #savedArea{grid-area:saved}
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <div id="currentPreset"><span>Preset:</span> None</div>
+  <h1>Quick Position Calculator</h1>
 
-  <!-- Calculator -->
-  <div class="card" style="grid-area:calc">
-    <div class="card-title">Calculation</div>
-    <div class="grid-2">
+  <!-- INPUT -->
+  <div class="card" id="inputArea">
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <input type="number" id="acc" placeholder="Balance USDT" class="input-imp">
+      <input type="number" id="rp" placeholder="Risk %" value="1" class="input-imp" style="display:block">
+      <input type="number" id="ra" placeholder="Risk USDT" class="input-imp" style="display:none">
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
       <div>
-        <div class="form-group"><label>Account Balance (USDT)</label><input type="number" id="acc" placeholder="1000" class="calc-input-area"></div>
-        <div class="form-group">
-          <label>Risk Type</label>
-          <div class="toggle-group">
-            <button class="toggle-btn active" data-mode="p">%</button>
-            <button class="toggle-btn" data-mode="a">Fixed</button>
-          </div>
-          <input type="number" id="rp" placeholder="1.5%" class="risk-inp calc-input-area">
-          <input type="number" id="ra" placeholder="15 USDT" class="risk-inp calc-input-area" style="display:none">
-        </div>
-        <div class="form-group"><label>Entry Price</label><input type="number" id="e" placeholder="30000" class="calc-input-area"></div>
-        <div class="form-group">
-          <label>Stop Loss</label>
-          <div class="toggle-group">
-            <button class="toggle-btn active" data-mode="p">Price</button>
-            <button class="toggle-btn" data-mode="pp">% Entry</button>
-            <button class="toggle-btn" data-mode="pm">% Margin</button>
-          </div>
-          <input type="number" id="sp" placeholder="29800" class="sl-inp">
-          <input type="number" id="spp" placeholder="% from Entry" class="sl-inp" style="display:none">
-          <input type="number" id="spm" placeholder="% from Margin" class="sl-inp" style="display:none">
-        </div>
+        <label>Entry Price</label>
+        <input type="number" id="e" placeholder="30000" class="input-imp">
       </div>
       <div>
-        <div class="form-group">
-          <label>Take Profit (Optional)</label>
-          <div class="toggle-group">
-            <button class="toggle-btn active" data-mode="p">Price</button>
-            <button class="toggle-btn" data-mode="pp">% Entry</button>
-            <button class="toggle-btn" data-mode="pm">% Margin</button>
-          </div>
-          <input type="number" id="tp" placeholder="31000" class="tp-inp">
-          <input type="number" id="tpp" placeholder="% from Entry" class="tp-inp" style="display:none">
-          <input type="number" id="tpm" placeholder="% from Margin" class="tp-inp" style="display:none">
-        </div>
-        <div class="form-group">
-          <label>R:R Ratio</label>
-          <div class="toggle-group" id="rrBtns" style="flex-wrap:wrap;gap:4px">
-            <button class="toggle-btn" data-rr="1">1:1</button>
-            <button class="toggle-btn" data-rr="2">1:2</button>
-            <button class="toggle-btn" data-rr="3">1:3</button>
-            <input type="number" id="customRR" placeholder="Custom" step="0.1" style="width:70px;padding:8px;border-radius:6px;background:var(--bg3);border:1px solid var(--border);color:var(--text);margin-top:4px">
-            <button class="toggle-btn" id="applyRR" style="margin-top:4px">Apply</button>
-          </div>
-        </div>
-        <div class="form-group"><label>Leverage</label>
-          <div class="range-row">
-            <input type="range" id="lev" min="1" max="125" value="10">
-            <div class="lev-val" id="levVal">10x</div>
-          </div>
-          <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
-            <button class="toggle-btn" data-lev="5">5x</button>
-            <button class="toggle-btn" data-lev="10">10x</button>
-            <button class="toggle-btn" data-lev="20">20x</button>
-            <button class="toggle-btn" data-lev="30">30x</button>
-            <button class="toggle-btn" data-lev="40">40x</button>
-            <button class="toggle-btn" data-lev="50">50x</button>
-            <button class="toggle-btn" data-lev="100">100x</button>
-            <button class="toggle-btn" data-lev="125">125x</button>
-          </div>
-        </div>
-        <button class="btn btn-primary" style="margin-top:12px" onclick="calc()">Calculate</button>
+        <label>Stop Loss</label>
+        <input type="number" id="sp" placeholder="29800" class="input-imp">
       </div>
     </div>
-  </div>
 
-  <!-- Results -->
-  <div class="card result" id="res" style="grid-area:res">
-    <div style="text-align:center;color:var(--text2);opacity:0.6">Enter data to see results</div>
-  </div>
+    <div style="margin:12px 0">
+      <label>Leverage</label>
+      <div class="range-row">
+        <input type="range" id="lev" min="1" max="125" value="20">
+        <div id="levVal">20x</div>
+      </div>
+    </div>
 
-  <!-- Preset Manager -->
-  <div class="card" style="grid-area:preset">
-    <div class="card-title">Preset Manager</div>
-    <input type="text" id="presetName" placeholder="Preset name" style="margin-bottom:8px">
-    <input type="text" id="presetNote" placeholder="Note (optional)" style="margin-bottom:12px">
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-secondary" id="saveBtn" onclick="savePreset()">Save</button>
-      <button class="btn btn-secondary" onclick="renderPresets()">Refresh</button>
-      <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-calc" onclick="calc()">CALCULATE</button>
+      <button class="btn btn-save" onclick="quickSave()">SAVE POSITION</button>
     </div>
   </div>
 
-  <!-- Saved Presets -->
-  <div class="card" style="grid-area:list">
-    <div class="card-title">Saved Presets</div>
-    <div class="presets-list" id="presetList">
-      <div style="text-align:center;color:var(--text2);opacity:0.6;padding:20px">No presets yet</div>
-    </div>
+  <!-- RESULT -->
+  <div class="card" id="resultArea">
+    <div id="directionPlaceholder" style="color:#666;text-align:center;padding:40px 0">Nhập dữ liệu →</div>
+    <div id="resultContent" style="display:none"></div>
+  </div>
+
+  <!-- SAVED POSITIONS -->
+  <div class="card" id="savedArea" style="margin-top:12px">
+    <div style="font-weight:700;color:var(--accent);margin-bottom:8px">Vị thế đã lưu gần nhất</div>
+    <div id="quickList"></div>
   </div>
 </div>
 
 <script>
-// Toàn bộ JavaScript giữ nguyên như phiên bản bạn đã sửa lỗi công thức – chỉ thêm một dòng nhỏ để đảm bảo tương thích
-let riskMode='p', slMode='p', tpMode='p';
+let currentData = {};
 
 const els = {
-  acc:()=>document.getElementById('acc'), e:()=>document.getElementById('e'),
-  rp:()=>document.getElementById('rp'), ra:()=>document.getElementById('ra'),
-  sp:()=>document.getElementById('sp'), spp:()=>document.getElementById('spp'), spm:()=>document.getElementById('spm'),
-  tp:()=>document.getElementById('tp'), tpp:()=>document.getElementById('tpp'), tpm:()=>document.getElementById('tpm'),
-  lev:()=>document.getElementById('lev'), levVal:()=>document.getElementById('levVal'),
-  res:()=>document.getElementById('res'), presetList:()=>document.getElementById('presetList'),
-  current:()=>document.getElementById('currentPreset')
+  acc:()=>document.getElementById('acc'),
+  rp:()=>document.getElementById('rp'),
+  e:()=>document.getElementById('e'),
+  sp:()=>document.getElementById('sp'),
+  lev:()=>document.getElementById('lev'),
+  levVal:()=>document.getElementById('levVal'),
+  direction:()=>document.getElementById('directionPlaceholder'),
+  result:()=>document.getElementById('resultContent'),
+  list:()=>document.getElementById('quickList')
 };
 
-function save(){
-  localStorage.positionData=JSON.stringify({
-    acc:els.acc().value, riskMode, slMode, tpMode,
-    rp:els.rp().value, ra:els.ra().value, e:els.e().value,
-    sp:els.sp().value, spp:els.spp().value, spm:els.spm().value,
-    tp:els.tp().value, tpp:els.tpp().value, tpm:els.tpm().value,
-    lev:els.lev().value
-  });
-}
-
-function load(){
-  const d = JSON.parse(localStorage.positionData||'{}');
-  if(!d.acc) return;
-  els.acc().value = d.acc||'';
-  els.e().value = d.e||'';
-  els.lev().value = d.lev||10; els.levVal().textContent = (d.lev||10)+'x';
-  els.rp().value = d.rp||''; els.ra().value = d.ra||'';
-  els.sp().value = d.sp||''; els.spp().value = d.spp||''; els.spm().value = d.spm||'';
-  els.tp().value = d.tp||''; els.tpp().value = d.tpp||''; els.tpm().value = d.tpm||'';
-  riskMode = d.riskMode||'p'; slMode = d.slMode||'p'; tpMode = d.tpMode||'p';
-  updateInputs(); calc();
-}
-
-function updateInputs(){
-  document.querySelectorAll('.risk-inp, .sl-inp, .tp-inp').forEach(e=>e.style.display='none');
-  els.rp().style.display = riskMode==='p'?'block':'none';
-  els.ra().style.display = riskMode==='a'?'block':'none';
-  els.sp().style.display = slMode==='p'?'block':'none';
-  els.spp().style.display = slMode==='pp'?'block':'none';
-  els.spm().style.display = slMode==='pm'?'block':'none';
-  els.tp().style.display = tpMode==='p'?'block':'none';
-  els.tpp().style.display = tpMode==='pp'?'block':'none';
-  els.tpm().style.display = tpMode==='pm'?'block':'none';
-
-  document.querySelectorAll('.toggle-group').forEach(group=>{
-    const activeMode = group.querySelector('.sl-inp') ? slMode : group.querySelector('.tp-inp') ? tpMode : riskMode;
-    group.querySelectorAll('.toggle-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode === activeMode));
-  });
-}
-
-document.querySelectorAll('[data-mode]').forEach(btn=>{
-  btn.onclick = e=>{
-    const mode = e.target.dataset.mode;
-    const parent = e.target.closest('.form-group');
-    if(parent.querySelector('.risk-inp')) riskMode = mode;
-    if(parent.querySelector('.sl-inp')) slMode = mode;
-    if(parent.querySelector('.tp-inp')) tpMode = mode;
-    updateInputs(); save(); calc();
-  };
-});
-
-document.getElementById('lev').oninput = e=>{ 
-  els.levVal().textContent = e.target.value+'x'; 
-  save(); calc(); 
+els.lev().oninput = () => {
+  els.levVal().textContent = els.lev().value + 'x';
+  calc();
 };
-
-document.querySelectorAll('button[data-lev]').forEach(btn => {
-  btn.onclick = e => {
-    const leverage = e.currentTarget.dataset.lev;
-    els.lev().value = leverage;
-    els.levVal().textContent = leverage + 'x';
-    save();
-    calc();
-  };
-});
-
-document.getElementById('applyRR').onclick = ()=>{ 
-  const v = parseFloat(document.getElementById('customRR').value); 
-  if(v>0) setRR(v); 
-};
-document.querySelectorAll('#rrBtns [data-rr]').forEach(b=>b.onclick=()=>setRR(parseFloat(b.dataset.rr)));
-
-function setRR(ratio){
-  const entry = parseFloat(els.e().value);
-  let sl = getSLPrice();
-  if(isNaN(entry) || isNaN(sl)) return alert('Need valid Entry & Stop Loss');
-  const isLong = sl < entry;
-  const distance = Math.abs(entry - sl);
-  const tp = isLong ? entry + distance * ratio : entry - distance * ratio;
-  els.tp().value = tp.toFixed(8);
-  tpMode = 'p';
-  updateInputs(); calc();
-}
-
-function getSLPrice(){
-  const e = parseFloat(els.e().value);
-  if(slMode==='p') return parseFloat(els.sp().value);
-  if(slMode==='pp'){
-    const pct = parseFloat(els.spp().value)||0;
-    return e * (1 - pct/100);
-  }
-  if(slMode==='pm'){
-    const pct = parseFloat(els.spm().value)||0;
-    const acc = parseFloat(els.acc().value);
-    const riskAmt = riskMode==='p' ? acc*(parseFloat(els.rp().value)||0)/100 : parseFloat(els.ra().value)||0;
-    const lev = parseFloat(els.lev().value);
-    const margin = riskAmt * lev / pct * 100;
-    const distance = margin / (acc * lev / e);
-    return e - distance;
-  }
-  return NaN;
-}
-
-function getPresets(){ return JSON.parse(localStorage.positionPresets||'[]') }
-function savePresets(a){ localStorage.positionPresets=JSON.stringify(a.sort((a,b)=>b.ts-a.ts)) }
-
-function renderPresets(){
-  const list = els.presetList();
-  const presets = getPresets();
-  list.innerHTML = presets.length===0 ? '<div style="text-align:center;color:var(--text2);opacity:0.6;padding:20px">No presets yet</div>' : '';
-  presets.forEach(p=>{
-    const div=document.createElement('div'); div.className='preset-item';
-    div.innerHTML = `
-      <div>
-        <div class="preset-name">${p.name}</div>
-        ${p.note?`<div class="preset-note">${p.note}</div>`:''}
-        <div class="preset-time">${new Date(p.ts).toLocaleString()}</div>
-      </div>
-      <div class="preset-actions">
-        <button onclick="loadPreset('${p.name}')">Load</button>
-        <button style="color:var(--red)" onclick="delPreset('${p.name}')">Delete</button>
-      </div>`;
-    list.appendChild(div);
-  });
-}
-
-function savePreset(){
-  let name=document.getElementById('presetName').value.trim()||`Preset ${new Date().toLocaleDateString()}`;
-  const note=document.getElementById('presetNote').value.trim();
-  const data = {
-    acc:els.acc().value,riskMode,slMode,tpMode,
-    rp:els.rp().value,ra:els.ra().value,e:els.e().value,
-    sp:els.sp().value,spp:els.spp().value,spm:els.spm().value,
-    tp:els.tp().value,tpp:els.tpp().value,tpm:els.tpm().value,
-    lev:els.lev().value
-  };
-  let presets=getPresets();
-  const idx = presets.findIndex(x=>x.name===name);
-  if(idx>=0){ if(!confirm('Overwrite existing preset?')) return; presets[idx]={name,note,ts:Date.now(),data}; }
-  else presets.push({name,note,ts:Date.now(),data});
-  savePresets(presets); renderPresets(); clearForm();
-  alert('Preset saved successfully!');
-}
-
-function loadPreset(name){
-  const p = getPresets().find(x=>x.name===name);
-  if(!p) return;
-  const d = p.data;
-  els.acc().value=d.acc||''; els.e().value=d.e||'';
-  els.lev().value=d.lev||10; els.levVal().textContent=(d.lev||10)+'x';
-  riskMode=d.riskMode||'p'; slMode=d.slMode||'p'; tpMode=d.tpMode||'p';
-  els.rp().value=d.rp||''; els.ra().value=d.ra||'';
-  els.sp().value=d.sp||''; els.spp().value=d.spp||''; els.spm().value=d.spm||'';
-  els.tp().value=d.tp||''; els.tpp().value=d.tpp||''; els.tpm().value=d.tpm||'';
-  updateInputs(); calc();
-  els.current().innerHTML=`<span>Preset:</span> ${name}`;
-}
-
-function delPreset(name){ if(confirm('Delete this preset?')){ savePresets(getPresets().filter(x=>x.name!==name)); renderPresets(); } }
-function clearForm(){ document.getElementById('presetName').value=''; document.getElementById('presetNote').value=''; }
 
 function calc(){
-  const acc = parseFloat(els.acc().value);
-  const entry = parseFloat(els.e().value);
-  const lev = parseFloat(els.lev().value);
-  if(isNaN(acc)||isNaN(entry)||isNaN(lev)||acc<=0||entry<=0||lev<=0){
-    els.res().innerHTML='<div style="text-align:center;color:var(--text2);opacity:0.6">Please enter valid data</div>';
+  const acc = parseFloat(els.acc().value) || 0;
+  const riskPct = parseFloat(els.rp().value) || 1;
+  const entry = parseFloat(els.e().value) || 0;
+  const sl = parseFloat(els.sp().value) || 0;
+  const lev = parseFloat(els.lev().value) || 1;
+
+  if(!acc || !entry || !sl || acc<=0 || entry<=0 || sl<=0){
+    els.result().style.display='none';
+    els.direction().innerHTML = 'Nhập đầy đủ dữ liệu';
     return;
   }
 
-  const riskAmt = riskMode==='p' ? acc*(parseFloat(els.rp().value)||0)/100 : parseFloat(els.ra().value)||0;
-  if(riskAmt<=0){
-    els.res().innerHTML='<div style="color:var(--red);text-align:center">Risk amount must be > 0</div>';
-    return;
-  }
-
-  let sl;
-  if(slMode==='p'){
-    sl = parseFloat(els.sp().value);
-  } else if(slMode==='pp'){
-    const pct = parseFloat(els.spp().value)||0;
-    sl = entry * (1 - pct/100);
-  } else if(slMode==='pm'){
-    const pctMargin = parseFloat(els.spm().value)||0;
-    if(pctMargin<=0) { els.res().innerHTML='<div style="color:var(--red)">% Margin must be > 0</div>'; return; }
-    const positionValue = (riskAmt * 100) / pctMargin * lev;
-    const size = positionValue / entry;
-    const distance = riskAmt / size;
-    sl = entry - distance;
-  }
-
-  if(isNaN(sl) || Math.abs(entry - sl) < 1e-8){
-    els.res().innerHTML='<div style="color:var(--red)">Invalid Stop Loss</div>'; return;
-  }
-
+  const riskAmt = acc * riskPct / 100;
   const isLong = sl < entry;
   const distance = Math.abs(entry - sl);
   const size = riskAmt / distance;
-  const positionValue = size * entry;
-  const margin = positionValue / lev;
+  const posValue = size * entry;
+  const margin = posValue / lev;
+  const liq = isLong ? entry - (margin / size) : entry + (margin / size);
 
-  const liqDistance = margin / size;
-  const liq = isLong ? entry - liqDistance : entry + liqDistance;
+  currentData = {acc, riskPct, entry, sl, lev, riskAmt, size, posValue, margin, liq, isLong, ts:Date.now()};
 
-  const pctToSL = (distance / entry * 100).toFixed(3);
-  const riskMarginRatio = (riskAmt / margin * 100).toFixed(2);
+  // Direction badge lớn
+  els.direction().innerHTML = isLong ?
+    '<div class="direction long">LONG</div>' :
+    '<div class="direction short">SHORT</div>';
 
-  let tp = 0, rr = 'N/A';
-  if(els.tp().value || els.tpp().value || els.tpm().value){
-    if(tpMode==='p') tp = parseFloat(els.tp().value);
-    else if(tpMode==='pp'){
-      const pct = parseFloat(els.tpp().value)||0;
-      tp = isLong ? entry * (1 + pct/100) : entry * (1 - pct/100);
-    } else if(tpMode==='pm'){
-      const pct = parseFloat(els.tpm().value)||0;
-      if(pct<=0) tp = 0;
-      else {
-        const reward = riskAmt * pct / 100;
-        tp = isLong ? entry + reward/size : entry - reward/size;
-      }
-    }
-    if(tp && ((isLong && tp > entry) || (!isLong && tp < entry))){
-      const profit = isLong ? (tp - entry)*size : (entry - tp)*size;
-      rr = (profit / riskAmt).toFixed(2);
-    } else tp = 0;
-  }
-
-  const badge = isLong ? '<div class="direction-badge long-badge">LONG</div>' : '<div class="direction-badge short-badge">SHORT</div>';
-  let html = `<div style="font-weight:700;color:var(--accent);margin-bottom:12px">Results ${badge}</div><div class="res-grid">
-    <div class="res-item res-entry"><div class="res-item-label">Entry Price</div><div class="res-item-value">${entry.toFixed(6)}</div></div>
-    <div class="res-item res-sl"><div class="res-item-label">Stop Loss</div><div class="res-item-value">${sl.toFixed(6)}</div></div>
-    ${tp?`<div class="res-item res-tp"><div class="res-item-label">Take Profit</div><div class="res-item-value">${tp.toFixed(6)}</div></div>`:''}
-    <div class="res-item res-leverage"><div class="res-item-label">Leverage</div><div class="res-item-value">${lev}x</div></div>
-    <div class="res-item res-pos-value"><div class="res-item-label">Position Value</div><div class="res-item-value">$${positionValue.toFixed(2)}</div></div>
-    <div class="res-item res-margin"><div class="res-item-label">Margin Used</div><div class="res-item-value">$${margin.toFixed(2)}</div></div>
-    <div class="res-item"><div class="res-item-label">Risk Amount</div><div class="res-item-value">$${riskAmt.toFixed(2)}</div></div>
-    <div class="res-item ${riskMarginRatio>90?'danger':''}"><div class="res-item-label">Risk / Margin</div><div class="res-item-value">${riskMarginRatio}%</div></div>
-    <div class="res-item"><div class="res-item-label">SL Distance</div><div class="res-item-value">${pctToSL}%</div></div>
-    ${tp?`<div class="res-item" style="color:var(--green)"><div class="res-item-label">R:R Ratio</div><div class="res-item-value">1 : ${rr}</div></div>`:''}
-    <div class="res-item" style="grid-column:1/-1;background:rgba(240,185,11,.12);border-left-color:var(--accent)">
-      <div class="res-item-label">Estimated Liquidation</div>
-      <div class="res-item-value" style="color:var(--accent)">${liq.toFixed(6)}</div>
+  // Result
+  const rr = sl && entry ? (distance / entry * 100).toFixed(2) : 0;
+  els.result().style.display = 'block';
+  els.result().innerHTML = `
+    <div class="result-grid">
+      <div class="res-item"><div class="res-label">Position Value</div><div class="res-value highlight">$${posValue.toFixed(0)}</div></div>
+      <div class="res-item"><div class="res-label">Margin</div><div class="res-value">$${margin.toFixed(1)}</div></div>
+      <div class="res-item"><div class="res-label">SL Distance</div><div class="res-value ${isLong?'text-green':'text-red'}">${rr}%</div></div>
+      <div class="res-item"><div class="res-label">Liquidation</div><div class="res-value" style="color:#ff9900">${liq.toFixed(4)}</div></div>
+      <div class="res-item"><div class="res-label">Risk / Margin</div><div class="res-value ${(riskAmt/margin*100)>90?'color:red':''}">${(riskAmt/margin*100).toFixed(1)}%</div></div>
+      <div class="res-item"><div class="res-label">Size</div><div class="res-value">${size.toFixed(4)}</div></div>
     </div>
-  </div>`;
-
-  if(parseFloat(riskMarginRatio)>90){
-    html += `<div style="margin-top:12px;padding:12px;background:rgba(246,70,93,.2);color:var(--red);border-radius:8px;text-align:center;font-weight:600">
-      WARNING: Risk > 90% of margin → High chance of liquidation before SL!
-    </div>`;
-  }
-
-  els.res().innerHTML = html;
-  save();
+    ${(riskAmt/margin*100)>90 ? '<div class="warning">CẢNH BÁO: Rủi ro >90% margin → rất dễ quét SL!</div>' : ''}
+  `;
+  renderQuickList();
 }
 
-window.onload = ()=>{ load(); renderPresets(); updateInputs(); calc(); }
-document.querySelectorAll('input').forEach(i=>i.addEventListener('input',()=>setTimeout(calc,150)));
+function quickSave(){
+  if(!currentData.entry) return alert('Chưa có vị thế để lưu');
+  let saved = JSON.parse(localStorage.quickPositions || '[]');
+  saved.unshift({
+    name: `${currentData.isLong?'LONG':'SHORT'} ${currentData.entry} @${new Date().toLocaleTimeString('vi-VN')}`,
+    data: currentData
+  });
+  if(saved.length>20) saved.pop();
+  localStorage.quickPositions = JSON.stringify(saved);
+  renderQuickList();
+  alert('Đã lưu vị thế nhanh!');
+}
+
+function renderQuickList(){
+  let saved = JSON.parse(localStorage.quickPositions || '[]');
+  els.list().innerHTML = saved.length===0 ? 
+    '<div style="text-align:center;color:#666;padding:20px">Chưa có vị thế nào</div>' :
+    saved.map(p=>`
+      <div style="background:#222;padding:12px;border-radius:12px;margin:8px 0;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="color:var(--accent);font-weight:700">${p.name}</div>
+          <div style="font-size:13px;color:#aaa">
+            ${p.data.posValue.toFixed(0)}$ • ${p.data.margin.toFixed(1)}$ margin • ${p.data.lev}x
+          </div>
+        </div>
+        <button onclick="loadQuick('${saved.indexOf(p)}')" style="background:var(--accent);color:#000;padding:8px 12px;border-radius:8px;font-weight:700">Load</button>
+      </div>
+    `).join('');
+}
+
+function loadQuick(idx){
+  let saved = JSON.parse(localStorage.quickPositions || '[]');
+  let d = saved[idx].data;
+  els.acc().value = d.acc;
+  els.rp().value = d.riskPct;
+  els.e().value = d.entry;
+  els.sp().value = d.sl;
+  els.lev().value = d.lev;
+  els.levVal().textContent = d.lev + 'x';
+  calc();
+}
+
+// Auto calculate khi nhập
+document.querySelectorAll('input').forEach(i=>i.addEventListener('input',()=>setTimeout(calc,100)));
+
+// Load lần đầu
+window.onload = ()=>{ calc(); renderQuickList(); }
 </script>
 </body>
 </html>
