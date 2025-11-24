@@ -74,6 +74,7 @@ h2{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:14px;padding
 <body>
 
 <div class="container">
+  <!-- CALCULATOR + LIVE RESULT -->
   <div class="calc-card">
     <div class="card">
       <h2>Position Calculator <span id="directionBadge" class="badge">-</span></h2>
@@ -89,8 +90,8 @@ h2{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:14px;padding
         <input type="number" id="ra" placeholder="15" style="display:none">
       </div>
       
-      <div class="input-row"><label>Entry</label><input type="number" id="e" placeholder="72350" step="any"></div>
-      <div class="input-row"><label>Stop Loss</label><input type="number" id="sp" placeholder="71500" step="any"></div>
+      <div class="input-row"><label>Entry</label><input type="number" id="e" placeholder="30000" step="any"></div>
+      <div class="input-row"><label>Stop Loss</label><input type="number" id="sp" placeholder="29800" step="any"></div>
       
       <div class="input-row"><label>Take Profit</label>
         <div class="toggle" data-group="tp" style="flex:1;max-width:280px;">
@@ -118,10 +119,12 @@ h2{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:14px;padding
         </div>
       </div>
 
+      <!-- LIVE RESULT -->
       <div id="liveResult">
-        <div style="text-align:center;padding:40px;color:#555;font-size:14px">Đang tải dữ liệu lần trước...</div>
+        <div style="text-align:center;padding:40px;color:#555;font-size:14px">Nhập thông tin để xem kết quả tức thì</div>
       </div>
 
+      <!-- NÚT SAVE & CLEAR ĐƯA XUỐNG ĐÁY -->
       <div class="action-row">
         <button class="btn-full" onclick="savePosition()">SAVE POSITION</button>
         <button class="btn-full btn-gray" onclick="clearForm()">CLEAR FORM</button>
@@ -129,6 +132,7 @@ h2{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:14px;padding
     </div>
   </div>
 
+  <!-- SAVED POSITIONS -->
   <div class="saved-card">
     <div class="card">
       <h2>Saved Positions <span id="savedCount">0</span></h2>
@@ -146,62 +150,20 @@ h2{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:14px;padding
 let riskMode = 'p', tpMode = 'rr';
 const $ = id => document.getElementById(id);
 
-// === GHI NHỚ LẦN SỬ DỤNG CUỐI (SIÊU TIỆN) ===
-function saveCurrentState() {
-  const state = {
-    acc: $('acc').value,
-    riskMode, rp: $('rp').value, ra: $('ra').value,
-    e: $('e').value, sp: $('sp').value,
-    tpMode, tpInput: $('tpInput').value,
-    lev: $('lev').value
-  };
-  localStorage.setItem('lastCalcState', JSON.stringify(state));
-}
-
-function loadLastState() {
-  try {
-    const saved = localStorage.getItem('lastCalcState');
-    if (!saved) return false;
-    const s = JSON.parse(saved);
-
-    $('acc').value = s.acc || '1000';
-    riskMode = s.riskMode || 'p';
-    $('rp').value = s.rp || '1';
-    $('ra').value = s.ra || '15';
-    $('e').value = s.e || '';
-    $('sp').value = s.sp || '';
-    tpMode = s.tpMode || 'rr';
-    $('tpInput').value = s.tpInput || '2';
-    $('lev').value = s.lev || '20';
-
-    updateToggles();
-    $('levVal').textContent = (s.lev || '20') + 'x';
-    document.querySelectorAll('.lev-preset').forEach(b => 
-      b.classList.toggle('active', b.dataset.lev == (s.lev || '20'))
-    );
-    calc();
-    return true;
-  } catch(e) { return false; }
-}
-
-// Tự động lưu mỗi khi thay đổi
-document.querySelectorAll('input, .toggle button, .lev-preset').forEach(el => {
-  el.addEventListener('input', () => setTimeout(saveCurrentState, 100));
-  el.addEventListener('click', () => setTimeout(saveCurrentState, 100));
-});
-
-// Tạo tên vị thế đẹp
+// Auto generate tên vị thế cực dễ nhớ
 function generatePositionName() {
   const entry = parseFloat($('e').value) || 0;
   const sl = parseFloat($('sp').value) || 0;
   if (!entry || !sl || entry === sl) return "New Position";
+
   const isLong = sl < entry;
-  const symbol = 'BTC'; // có thể thêm ?s=ETH để đổi
-  const rounded = entry >= 1000 ? Math.round(entry) : entry.toFixed(1);
-  return `${symbol} ${isLong?'LONG':'SHORT'} ${rounded}`;
+  const symbol = new URLSearchParams(location.search).get('s') || 'BTC';
+  const roundedEntry = entry >= 1000 ? Math.round(entry) : entry.toFixed(1);
+  
+  return `${symbol} ${isLong?'LONG':'SHORT'} ${roundedEntry}`;
 }
 
-// Toggle & Leverage
+// Cập nhật toggle
 function updateToggles(){
   document.querySelectorAll('.toggle').forEach(t => {
     const mode = t.dataset.group === 'risk' ? riskMode : tpMode;
@@ -209,34 +171,35 @@ function updateToggles(){
   });
   $('rp').style.display = riskMode==='p'?'block':'none';
   $('ra').style.display = riskMode==='a'?'block':'none';
+
   const tpIn = $('tpInput');
   if(tpMode==='none'){ tpIn.placeholder='No TP'; tpIn.value=''; tpIn.disabled=true; }
   else if(tpMode==='rr'){ tpIn.placeholder='2 (R:R)'; if(!tpIn.value) tpIn.value=2; tpIn.disabled=false; }
   else { tpIn.placeholder='Giá TP'; tpIn.disabled=false; }
 }
 
-document.querySelectorAll('.toggle button').forEach(b=>b.onclick=()=>{
-  const g = b.closest('.toggle').dataset.group;
-  if(g==='risk') riskMode = b.dataset.mode;
-  if(g==='tp') tpMode = b.dataset.mode;
-  updateToggles(); calc(); saveCurrentState();
-});
-
-document.querySelectorAll('.lev-preset').forEach(b=>b.onclick=()=>{
+// Leverage presets
+document.querySelectorAll('.lev-preset').forEach(b=>b.onclick=()=> {
   const v = b.dataset.lev;
   $('lev').value = v; $('levVal').textContent = v+'x';
   document.querySelectorAll('.lev-preset').forEach(x=>x.classList.toggle('active', x.dataset.lev==v));
-  calc(); saveCurrentState();
+  calc();
 });
-
 $('lev').oninput = e => {
   const v = e.target.value;
   $('levVal').textContent = v+'x';
   document.querySelectorAll('.lev-preset').forEach(x=>x.classList.toggle('active', x.dataset.lev==v));
-  calc(); saveCurrentState();
+  calc();
 };
 
-// Tính toán
+document.querySelectorAll('.toggle button').forEach(b=>b.onclick=()=>{
+  const g = b.closest('.toggle').dataset.group;
+  if(g==='risk') riskMode = b.dataset.mode;
+  if(g==='tp') tpMode = b.dataset.mode;
+  updateToggles(); calc();
+});
+
+// Tính toán live
 function calc(){
   const acc = +$('acc').value || 0;
   const entry = +$('e').value || 0;
@@ -245,7 +208,7 @@ function calc(){
   const tpVal = +$('tpInput').value || 0;
 
   if(!acc || !entry || !sl || entry===sl){
-    $('liveResult').innerHTML = '<div style="text-align:center;padding:40px;color:#555">Nhập Entry + Stop Loss để tính</div>';
+    $('liveResult').innerHTML = '<div style="text-align:center;padding:40px;color:#555">Nhập thông tin để xem kết quả tức thì</div>';
     $('directionBadge').textContent = '-'; $('directionBadge').className = 'badge';
     return;
   }
@@ -286,7 +249,7 @@ function calc(){
     </div>`;
 }
 
-// SAVE POSITION
+// Lưu vị thế (tự động tạo tên)
 function savePosition(){
   if(!+$('e').value || !+$('sp').value){ alert('Vui lòng nhập Entry và Stop Loss'); return; }
   const name = generatePositionName();
@@ -300,10 +263,8 @@ function savePosition(){
   const idx = list.findIndex(p=>p.name===name);
   if(idx>-1) list[idx]=pos; else list.push(pos);
   savePositions(list); loadSavedPositions();
-  alert(`Đã lưu: ${name}`);
 }
 
-// Saved positions functions
 function getPositions(){ try{return JSON.parse(localStorage.getItem('savedPositions'))||[]}catch(e){return[]} }
 function savePositions(p){ localStorage.setItem('savedPositions', JSON.stringify(p)); }
 
@@ -329,8 +290,7 @@ function loadPosition(i){
   $('e').value=p.e; $('sp').value=p.sp; tpMode=p.tpMode; $('tpInput').value=p.tpInput; $('lev').value=p.lev;
   updateToggles(); $('levVal').textContent=p.lev+'x';
   document.querySelectorAll('.lev-preset').forEach(b=>b.classList.toggle('active',b.dataset.lev==p.lev));
-  calc(); saveCurrentState(); // cập nhật cả lần cuối
-  window.scrollTo(0,0);
+  calc(); window.scrollTo(0,0);
 }
 
 function deletePosition(i){
@@ -340,21 +300,191 @@ function deletePosition(i){
 }
 
 function clearForm(){
-  if(!confirm('Xóa toàn bộ dữ liệu hiện tại?')) return;
-  localStorage.removeItem('lastCalcState');
+
+  localStorage.removeItem(FORM_STORAGE_KEY); // Clear saved form state as well
+
   $('acc').value='1000'; riskMode='p'; $('rp').value='1'; $('ra').value='15';
+
   $('e').value=''; $('sp').value=''; tpMode='rr'; $('tpInput').value='2'; $('lev').value='20';
+
   updateToggles(); $('levVal').textContent='20x';
+
   document.querySelectorAll('.lev-preset').forEach(b=>b.classList.toggle('active',b.dataset.lev=='20'));
+
   calc();
+
 }
 
-// KHỞI ĐỘNG
-loadLastState() || calc(); // nếu có dữ liệu cũ → load, không thì để trống
-loadSavedPositions();
 
-// Tự động tính + lưu trạng thái
-document.querySelectorAll('input').forEach(el=>el.addEventListener('input',()=>setTimeout(()=>{calc();saveCurrentState();},50)));
+
+// --- LocalStorage Save/Load ---
+
+const FORM_STORAGE_KEY = 'positionCalculatorFormState';
+
+
+
+function saveFormToLocalStorage() {
+
+  const formData = {
+
+    acc: $('acc').value,
+
+    riskMode: riskMode,
+
+    rp: $('rp').value,
+
+    ra: $('ra').value,
+
+    e: $('e').value,
+
+    sp: $('sp').value,
+
+    tpMode: tpMode,
+
+    tpInput: $('tpInput').value,
+
+    lev: $('lev').value,
+
+  };
+
+  localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(formData));
+
+}
+
+
+
+function loadFormFromLocalStorage() {
+
+  const savedData = localStorage.getItem(FORM_STORAGE_KEY);
+
+  if (!savedData) return;
+
+
+
+  try {
+
+    const formData = JSON.parse(savedData);
+
+    if(!formData) return;
+
+
+
+    $('acc').value = formData.acc || '1000';
+
+    riskMode = formData.riskMode || 'p';
+
+    $('rp').value = formData.rp || '1';
+
+    $('ra').value = formData.ra || '15';
+
+    $('e').value = formData.e || '';
+
+    $('sp').value = formData.sp || '';
+
+    tpMode = formData.tpMode || 'rr';
+
+    $('tpInput').value = formData.tpInput || '2';
+
+    $('lev').value = formData.lev || '20';
+
+    
+
+  } catch (e) {
+
+    console.error("Failed to load form data from localStorage", e);
+
+    localStorage.removeItem(FORM_STORAGE_KEY);
+
+  }
+
+}
+
+
+
+// Khởi chạy
+
+function initialize() {
+
+    loadFormFromLocalStorage();
+
+    updateToggles();
+
+    calc();
+
+    loadSavedPositions();
+
+    
+
+    // Attach listeners that also save state
+
+    document.querySelectorAll('input').forEach(el => el.addEventListener('input', () => {
+
+        setTimeout(() => { calc(); saveFormToLocalStorage(); }, 10);
+
+    }));
+
+    document.querySelectorAll('.toggle button').forEach(b => {
+
+        b.onclick = () => {
+
+            const g = b.closest('.toggle').dataset.group;
+
+            if (g === 'risk') riskMode = b.dataset.mode;
+
+            if (g === 'tp') tpMode = b.dataset.mode;
+
+            updateToggles();
+
+            calc();
+
+            saveFormToLocalStorage();
+
+        };
+
+    });
+
+    document.querySelectorAll('.lev-preset').forEach(b => {
+
+        b.onclick = () => {
+
+            const v = b.dataset.lev;
+
+            $('lev').value = v;
+
+            $('levVal').textContent = v + 'x';
+
+            document.querySelectorAll('.lev-preset').forEach(x => x.classList.toggle('active', x.dataset.lev == v));
+
+            calc();
+
+            saveFormToLocalStorage();
+
+        };
+
+    });
+
+    $('lev').oninput = e => {
+
+        const v = e.target.value;
+
+        $('levVal').textContent = v + 'x';
+
+        document.querySelectorAll('.lev-preset').forEach(x => x.classList.toggle('active', x.dataset.lev == v));
+
+        calc();
+
+        saveFormToLocalStorage();
+
+    };
+
+}
+
+
+
+initialize();
+
 </script>
+
 </body>
+
 </html>
