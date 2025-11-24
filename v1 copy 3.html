@@ -56,74 +56,72 @@ h2{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:10px;padding
 .saved-actions button:hover{color:#fff}
 
 @media(min-width:768px){
-  .container{grid-template-columns:420px 1fr;gap:20px}
-  .calc-card{grid-row:1/3}
+  .container{grid-template-columns:420px 1fr;gap:20px;}
+  #calc-ui { grid-column: 1; grid-row: 1; }
+  #saved-ui { grid-column: 1; grid-row: 2; }
+  #result-ui { grid-column: 2; grid-row: 1 / span 2; }
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="calc-card">
-    <div class="card">
-      <h2>Position Calculator <span id="directionBadge">-</span></h2>
-      
-      <div class="input-row"><label>Balance</label><input type="number" id="acc" placeholder="1000" value="1000"></div>
-      
-      <div class="input-row"><label>Risk</label>
-        <div class="toggle" data-group="risk">
-          <button class="active" data-mode="p">%</button>
-          <button data-mode="a">$</button>
-        </div>
-        <input type="number" id="rp" placeholder="1" step="0.1" value="1">
-        <input type="number" id="ra" placeholder="15" style="display:none">
+  <div id="calc-ui" class="card">
+    <h2>Position Calculator <span id="directionBadge">-</span></h2>
+    
+    <div class="input-row"><label>Balance</label><input type="number" id="acc" placeholder="1000" value="1000"></div>
+    
+    <div class="input-row"><label>Risk</label>
+      <div class="toggle" data-group="risk">
+        <button class="active" data-mode="p">%</button>
+        <button data-mode="a">$</button>
       </div>
-      
-      <div class="input-row"><label>Entry</label><input type="number" id="e" placeholder="30000" step="any"></div>
-      
-      <div class="input-row"><label>Stop Loss</label><input type="number" id="sp" placeholder="29800" step="any"></div>
-      
-      <!-- Take Profit: 3 nút + 1 ô nhập chung -->
-      <div class="input-row"><label>Take Profit</label>
-        <div class="toggle" data-group="tp" style="flex:1;max-width:280px;">
-          <button data-mode="none">None</button>
-          <button class="active" data-mode="rr">R:R</button>
-          <button data-mode="price">Price</button>
-        </div>
-        <input type="number" id="tpInput" placeholder="2 (R:R)" step="any" style="flex:1" value="2">
+      <input type="number" id="rp" placeholder="1" step="0.1" value="1">
+      <input type="number" id="ra" placeholder="15" style="display:none">
+    </div>
+    
+    <div class="input-row"><label>Entry</label><input type="number" id="e" placeholder="30000" step="any"></div>
+    
+    <div class="input-row"><label>Stop Loss</label><input type="number" id="sp" placeholder="29800" step="any"></div>
+    
+    <!-- Take Profit: 3 nút + 1 ô nhập chung -->
+    <div class="input-row"><label>Take Profit</label>
+      <div class="toggle" data-group="tp" style="flex:1;max-width:280px;">
+        <button data-mode="none">None</button>
+        <button class="active" data-mode="rr">R:R</button>
+        <button data-mode="price">Price</button>
       </div>
-      
-      <div class="input-row"><label>Leverage</label>
-        <div class="lev-row">
-          <input type="range" id="lev" min="1" max="125" value="20">
-          <div class="lev-val" id="levVal">20x</div>
-        </div>
+      <input type="number" id="tpInput" placeholder="2 (R:R)" step="any" style="flex:1" value="2">
+    </div>
+    
+    <div class="input-row"><label>Leverage</label>
+      <div class="lev-row">
+        <input type="range" id="lev" min="1" max="125" value="20">
+        <div class="lev-val" id="levVal">20x</div>
       </div>
-
-      <div class="input-row"><label>Tên vị thế</label><input type="text" id="posName" placeholder="VD: BTC Long 72k"></div>
-      
-      <button class="btn-full" onclick="savePosition()">SAVE POSITION</button>
-      <button class="btn-full" style="background:#333;margin-top:8px" onclick="clearForm()">CLEAR FORM</button>
     </div>
 
-    <div class="card" style="margin-top:16px;">
-      <h2>Saved Positions <span style="font-weight:normal;font-size:12px;color:#888" id="savedCount">0</span></h2>
-      <div id="savedList" class="saved-list">
-        <div style="text-align:center;padding:20px;color:#555">Chưa có vị thế nào</div>
-      </div>
-      <button class="btn-full" style="background:#660022;margin-top:12px" onclick="if(confirm('Xóa tất cả?')){localStorage.removeItem('savedPositions');loadSavedPositions();}">
-        CLEAR ALL
-      </button>
+    <div class="input-row"><label>Tên vị thế</label><input type="text" id="posName" placeholder="VD: BTC Long 72k"></div>
+    
+    <button class="btn-full" onclick="savePosition()">SAVE POSITION</button>
+    <button class="btn-full" style="background:#333;margin-top:8px" onclick="clearForm()">CLEAR FORM</button>
+  </div>
+
+  <div id="result-ui" class="card">
+    <h2>Result <span id="rrBadge" class="badge rr-badge">R:R ?</span></h2>
+    <div class="result-grid" id="res">
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:#555">Nhập dữ liệu →</div>
     </div>
   </div>
 
-  <div class="result-card">
-    <div class="card">
-      <h2>Result <span id="rrBadge" class="badge rr-badge">R:R ?</span></h2>
-      <div class="result-grid" id="res">
-        <div style="grid-column:1/-1;text-align:center;padding:40px;color:#555">Nhập dữ liệu →</div>
-      </div>
+  <div id="saved-ui" class="card">
+    <h2>Saved Positions <span style="font-weight:normal;font-size:12px;color:#888" id="savedCount">0</span></h2>
+    <div id="savedList" class="saved-list">
+      <div style="text-align:center;padding:20px;color:#555">Chưa có vị thế nào</div>
     </div>
+    <button class="btn-full" style="background:#660022;margin-top:12px" onclick="if(confirm('Xóa tất cả?')){localStorage.removeItem('savedPositions');loadSavedPositions();}">
+      CLEAR ALL
+    </button>
   </div>
 </div>
 
