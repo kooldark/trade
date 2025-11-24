@@ -90,7 +90,9 @@ h2{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:10px;padding
           <button class="active" data-mode="rr">R:R</button>
           <button data-mode="price">Price</button>
         </div>
-        <input type="number" id="tpInput" placeholder="2 (R:R)" step="any" style="flex:1" value="2">
+      </div>
+      <div class="input-row">
+        <input type="number" id="tpInput" placeholder="2.5 (R:R) hoặc 31000 (Price)" step="any" style="flex:1">
       </div>
       
       <div class="input-row"><label>Leverage</label>
@@ -154,8 +156,7 @@ function updateToggles(){
     tpInput.value = '';
     tpInput.disabled = true;
   } else if(tpMode === 'rr'){
-    tpInput.placeholder = '2 (R:R)';
-    if(!$('tpInput').value) $('tpInput').value = 2;
+    tpInput.placeholder = '2.5 (R:R)';
     tpInput.disabled = false;
   } else if(tpMode === 'price'){
     tpInput.placeholder = '31000 (Giá TP)';
@@ -215,8 +216,6 @@ function calc(){
 
   $('rrBadge').textContent = tp ? `R:R 1:${rrRatio}` : 'No TP';
   $('rrBadge').style.background = rrRatio >= 3 ? '#004d40' : rrRatio >= 2 ? '#1a1a2e' : '#660022';
-  
-  const riskMarginStyle = riskMarginPct > 90 ? `style="color:var(--red)"` : '';
 
   $('res').innerHTML = `
     <div class="res-item ${isLong?'long':'short'}"><div class="res-item-label">Entry</div><div class="res-item-value">${entry.toFixed(6)}</div></div>
@@ -226,7 +225,7 @@ function calc(){
     <div class="res-item"><div class="res-item-label">Position Value</div><div class="res-item-value">$${posValue.toFixed(0)}</div></div>
     <div class="res-item"><div class="res-item-label">Margin</div><div class="res-item-value">$${margin.toFixed(2)}</div></div>
     <div class="res-item"><div class="res-item-label">Risk $</div><div class="res-item-value">$${riskAmt.toFixed(2)}</div></div>
-    <div class="res-item"><div class="res-item-label">Risk/Margin</div><div class="res-item-value" ${riskMarginStyle}>${riskMarginPct}%</div></div>
+    <div class="res-item"><div class="res-item-label">Risk/Margin</div><div class="res-item-value">${riskMarginPct}%</div></div>
     <div class="res-item"><div class="res-item-label">Liq Price</div><div class="res-item-value">${liq.toFixed(6)}</div></div>
   `;
 }
