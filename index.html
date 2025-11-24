@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Fast Position Calc + Multi-Save</title>
+<title>Fast Position Calc Pro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -11,29 +11,42 @@ body{background:#0d0d0d;color:#eee;line-height:1.4;min-height:100vh;padding:12px
 
 :root{
   --bg:#0d0d0d;--card:#1a1a1a;--border:#333;
-  --accent:#f0b90b;--green:#00d4aa;--red:#ff4466;--blue:#4c8bf5;
-  --radius:12px;--gap:10px;
+  --accent:#f0b90b;--green:#00d4aa;--red:#ff4466;
+  --radius:12px;--gap:12px;
 }
 
-.container{max-width:1240px;margin:0 auto;display:grid;gap:var(--gap);grid-template-columns:1fr;}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;overflow:hidden;position:relative}
+.container{max-width:1240px;margin:0 auto;display:grid;gap:var(--gap);}
 
-h2{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+/* Mobile first: thứ tự dọc chính xác như yêu cầu */
+.container > * {order: 10;} /* mặc định */
 
-.input-row{display:flex;gap:8px;align-items:center;margin-bottom:9px;flex-wrap:wrap}
+.calc-card {order: 1;}
+.result-card {order: 2;}
+.saved-card {order: 3;}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow:hidden;margin-bottom:var(--gap)}
+
+h2{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+
+.input-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
 .input-row label{flex:0 0 90px;font-size:13px;color:#aaa;font-weight:500}
-.input-row input, .input-row select{
+.input-row input{
   flex:1;background:#111;color:#fff;border:1px solid #444;border-radius:8px;padding:10px 12px;font-size:15px;min-width:0}
 .input-row input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(240,185,11,.2);outline:none}
 
-.toggle{display:flex;background:#111;border:1px solid #444;border-radius:8px;overflow:hidden;margin-bottom:9px}
+.toggle{display:flex;background:#111;border:1px solid #444;border-radius:8px;overflow:hidden;margin-bottom:10px}
 .toggle button{flex:1;padding:9px 6px;background:transparent;color:#aaa;font-weight:600;font-size:12px;border:none;cursor:pointer}
 .toggle button.active{background:var(--accent);color:#000}
 
-.lev-row{display:flex;align-items:center;gap:12px;margin-bottom:9px}
+.lev-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
 .lev-val{background:var(--accent);color:#000;padding:6px 12px;border-radius:6px;font-weight:800;font-size:14px;min-width:56px;text-align:center}
 
-.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.btn-full{width:100%;padding:14px;background:var(--accent);color:#000;border:none;border-radius:8px;font-weight:700;font-size:15px;margin-top:8px;cursor:pointer;transition:filter .2s}
+.btn-full:hover{filter:brightness(1.15)}
+.btn-danger{background:#660022;}
+.btn-gray{background:#333;}
+
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-top:8px}
 .res-item{background:#111;padding:10px 12px;border-radius:8px;border-left:4px solid var(--accent)}
 .res-item.long{border-left-color:var(--green)}
 .res-item.short{border-left-color:var(--red)}
@@ -45,36 +58,39 @@ h2{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:10px;padding
 .short-bg{background:#660022;color:var(--red)}
 .rr-badge{background:#1a1a2e;color:#88f}
 
-.btn-full{width:100%;padding:14px;background:var(--accent);color:#000;border:none;border-radius:8px;font-weight:700;font-size:15px;margin-top:12px;cursor:pointer;transition:filter .2s}
-.btn-full:hover{filter:brightness(1.15)}
-.btn-small{padding:8px 12px;font-size:13px;margin:4px 4px 0 0}
-
-.saved-list{margin-top:16px;max-height:60vh;overflow-y:auto}
-.saved-item{
-  background:#111;border:1px solid #333;border-radius:8px;padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
-}
+.saved-list{margin-top:12px;max-height:50vh;overflow-y:auto}
+.saved-item{background:#111;border:1px solid #333;border-radius:8px;padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 .saved-name{font-weight:700;color:var(--accent);font-size:14px}
 .saved-info{font-size:12px;color:#aaa;flex:1;text-align:right}
-.saved-actions button{background:transparent;color:#888;border:none;cursor:pointer;font-size:18px;padding:4px 8px}
+.saved-actions button{background:transparent;color:#888;border:none;cursor:pointer;font-size:20px;padding:4px 8px}
 .saved-actions button:hover{color:#fff}
 
+/* Tablet & Desktop: 2-3 cột */
 @media(min-width:768px){
-  .container{grid-template-columns:420px 1fr;gap:20px}
-  .calc-card{grid-row:1/3}
+  .container{
+    grid-template-columns: 420px 1fr;
+    gap:20px;
+  }
+  .calc-card{grid-row:1/3; order:1;}
+  .result-card{order:2;}
+  .saved-card{order:3; grid-column:1;}
 }
-@media(min-width:1100px){
-  .container{grid-template-columns:480px 1fr}
+
+@media(min-width:1024px){
+  .container{grid-template-columns: 420px 1fr 340px;}
+  .calc-card{grid-row:1/2;}
+  .result-card{grid-row:1/2; grid-column:2;}
+  .saved-card{grid-column:3; grid-row:1/3;}
 }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- LEFT: INPUT + SAVE MANAGER -->
+  <!-- 1. Calculator - Ưu tiên hiển thị đầu tiên trên mobile -->
   <div class="calc-card">
     <div class="card">
-      <h2>Position Calculator <span id="directionBadge">-</span></h2>
-      
+      <h2>Position Calculator <span id="directionBadge" class="badge">-</span></h2>
       <div class="input-row"><label>Balance</label><input type="number" id="acc" placeholder="1000" value="1000"></div>
       
       <div class="input-row"><label>Risk</label>
@@ -82,29 +98,20 @@ h2{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:10px;padding
           <button class="active" data-mode="p">%</button>
           <button data-mode="a">$</button>
         </div>
+        <input type="number" id="rp" placeholder="1" step="0.1" value="1">
+        <input type="number" id="ra" placeholder="15" style="display:none">
       </div>
-      <div class="input-row"><input type="number" id="rp" placeholder="1" step="0.1" value="1"><input type="number" id="ra" placeholder="15" style="display:none"></div>
       
       <div class="input-row"><label>Entry</label><input type="number" id="e" placeholder="30000" step="any"></div>
-      
-      <div class="input-row"><label>Stop Loss</label>
-        <div class="toggle" data-group="sl">
-          <button class="active" data-mode="p">Price</button>
-          <button data-mode="pp">% Entry</button>
-        </div>
-      </div>
-      <div class="input-row"><input type="number" id="sp" placeholder="29800" step="any"><input type="number" id="spp" placeholder="1.5" step="0.01" style="display:none"></div>
+      <div class="input-row"><label>Stop Loss</label><input type="number" id="sp" placeholder="29800" step="any"></div>
       
       <div class="input-row"><label>Take Profit</label>
-        <div class="toggle" data-group="tp">
+        <div class="toggle" data-group="tp" style="flex:1;max-width:280px;">
           <button data-mode="none">None</button>
           <button class="active" data-mode="rr">R:R</button>
-          <button data-mode="p">Price</button>
+          <button data-mode="price">Price</button>
         </div>
-      </div>
-      <div class="input-row">
-        <input type="number" id="rr" placeholder="2.5" step="0.1" value="2.5" style="display:none">
-        <input type="number" id="tp" placeholder="31000" step="any" style="display:none">
+        <input type="number" id="tpInput" placeholder="2 (R:R)" step="any" value="2">
       </div>
       
       <div class="input-row"><label>Leverage</label>
@@ -114,101 +121,149 @@ h2{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:10px;padding
         </div>
       </div>
 
-      <div class="input-row"><label>Position Name</label><input type="text" id="posName" placeholder="VD: BTC Long 72k breakout"></div>
+      <div class="input-row"><label>Tên vị thế</label><input type="text" id="posName" placeholder="VD: BTC Long 72k"></div>
       
       <button class="btn-full" onclick="savePosition()">SAVE POSITION</button>
-      <button class="btn-full" style="background:#333;margin-top:8px" onclick="clearForm()">CLEAR FORM</button>
-    </div>
-
-    <!-- Danh sách vị thế đã lưu -->
-    <div class="card" style="margin-top:16px;">
-      <h2>Saved Positions <span style="font-weight:normal;font-size:12px;color:#888" id="savedCount">0</span></h2>
-      <div id="savedList" class="saved-list">
-        <div style="text-align:center;padding:20px;color:#555">Chưa có vị thế nào được lưu</div>
-      </div>
-      <button class="btn-full" style="background:#660022;margin-top:12px" onclick="if(confirm('Xóa toàn bộ vị thế đã lưu?')){localStorage.removeItem('savedPositions');loadSavedPositions();}">CLEAR ALL</button>
+      <button class="btn-full btn-gray" onclick="clearForm()">CLEAR FORM</button>
     </div>
   </div>
 
-  <!-- RIGHT: KẾT QUẢ -->
+  <!-- 2. Result - Luôn hiển thị ngay dưới Calculator trên mobile -->
   <div class="result-card">
     <div class="card">
       <h2>Result <span id="rrBadge" class="badge rr-badge">R:R ?</span></h2>
       <div class="result-grid" id="res">
-        <div style="grid-column:1/-1;text-align:center;padding:40px;color:#555">Nhập dữ liệu →</div>
+        <div style="grid-column:1/-1;text-align:center;padding:50px;color:#555;font-size:14px">Nhập thông tin để tính →</div>
       </div>
+    </div>
+  </div>
+
+  <!-- 3. Saved Positions - Cuối cùng trên mobile -->
+  <div class="saved-card">
+    <div class="card">
+      <h2>Saved Positions <span style="font-weight:normal;font-size:12px;color:#888" id="savedCount">0</span></h2>
+      <div id="savedList" class="saved-list">
+        <div style="text-align:center;padding:30px;color:#555">Chưa có vị thế nào được lưu</div>
+      </div>
+      <button class="btn-full btn-danger" onclick="if(confirm('Xóa tất cả vị thế đã lưu?')){localStorage.removeItem('savedPositions');loadSavedPositions();}">
+        CLEAR ALL
+      </button>
     </div>
   </div>
 </div>
 
 <script>
-let riskMode='p', slMode='p', tpMode='rr';
+let riskMode = 'p';
+let tpMode = 'rr';
+
 const $ = id => document.getElementById(id);
 
 function updateToggles(){
-  document.querySelectorAll('.toggle').forEach(t=>{
+  document.querySelectorAll('.toggle').forEach(t => {
     const group = t.dataset.group;
-    const mode = group==='risk'?riskMode : group==='sl'?slMode : tpMode;
-    t.querySelectorAll('button').forEach(b=>b.className = b.dataset.mode===mode?'active':'');
+    const mode = group === 'risk' ? riskMode : tpMode;
+    t.querySelectorAll('button').forEach(b => {
+      b.className = b.dataset.mode === mode ? 'active' : '';
+    });
   });
-  $('rp').style.display = riskMode==='p'?'block':'none';
-  $('ra').style.display = riskMode==='a'?'block':'none';
-  $('sp').style.display = slMode==='p'?'block':'none';
-  $('spp').style.display = slMode==='pp'?'block':'none';
-  $('rr').style.display = tpMode==='rr'?'block':'none';
-  $('tp').style.display = tpMode==='p'?'block':'none';
+
+  $('rp').style.display = riskMode === 'p' ? 'block' : 'none';
+  $('ra').style.display = riskMode === 'a' ? 'block' : 'none';
+
+  const tpInput = $('tpInput');
+  if(tpMode === 'none'){
+    tpInput.placeholder = 'Không có Take Profit';
+    tpInput.value = '';
+    tpInput.disabled = true;
+  } else if(tpMode === 'rr'){
+    tpInput.placeholder = '2 (R:R)';
+    if(!tpInput.value) tpInput.value = 2;
+    tpInput.disabled = false;
+  } else if(tpMode === 'price'){
+    tpInput.placeholder = '31000 (Giá TP)';
+    tpInput.disabled = false;
+  }
 }
 
-document.querySelectorAll('.toggle button').forEach(b=>{
-  b.onclick=()=>{ 
+document.querySelectorAll('.toggle button').forEach(b => {
+  b.onclick = () => {
     const g = b.closest('.toggle').dataset.group;
-    if(g==='risk') riskMode=b.dataset.mode;
-    if(g==='sl') slMode=b.dataset.mode;
-    if(g==='tp') tpMode=b.dataset.mode;
-    updateToggles(); calc();
+    if(g === 'risk') riskMode = b.dataset.mode;
+    if(g === 'tp') tpMode = b.dataset.mode;
+    updateToggles();
+    calc();
   };
 });
 
-$('lev').oninput = e=>{ $('levVal').textContent=e.target.value+'x'; calc(); }
+$('lev').oninput = e => { 
+  $('levVal').textContent = e.target.value + 'x'; 
+  calc(); 
+};
 
-// Tính toán vị thế
+function generateAndSetPositionName() {
+  const entry = +$('e').value || 0;
+  const sl = +$('sp').value || 0;
+
+  if (!entry || !sl || entry === sl) {
+    $('posName').value = '';
+    return;
+  }
+  
+  const isLong = sl < entry;
+  const direction = isLong ? 'LONG' : 'SHORT';
+  
+  // simple format number
+  const formatPrice = (price) => {
+    if (price >= 1) return price.toFixed(2);
+    return price.toPrecision(4);
+  }
+
+  $('posName').value = `${direction} @ ${formatPrice(entry)}`;
+}
+
 function calc(){
-  const acc = +$('acc').value, entry = +$('e').value, lev = +$('lev').value;
-  if(!acc||!entry||!lev) return clearResult();
+  const acc = +$('acc').value || 0;
+  const entry = +$('e').value || 0;
+  const sl = +$('sp').value || 0;
+  const lev = +$('lev').value || 1;
+  const tpVal = +$('tpInput').value || 0;
 
-  const riskPct = +$('rp').value || 0;
-  const riskAmt = riskMode==='p'? acc*riskPct/100 : +$('ra').value || 0;
-  if(riskAmt<=0) return clearResult();
+  if(!acc || !entry || !sl || entry === sl) {
+    generateAndSetPositionName();
+    return clearResult();
+  }
 
-  let sl;
-  if(slMode==='p') sl = +$('sp').value;
-  else sl = entry * (1 - (+$('spp').value||0)/100);
-  if(!sl || Math.abs(entry-sl)<1e-8) return clearResult();
+  const riskAmt = riskMode === 'p' ? acc * (+$('rp').value || 0) / 100 : (+$('ra').value || 0);
+  if(riskAmt <= 0) return clearResult();
 
   const isLong = sl < entry;
   const distance = Math.abs(entry - sl);
   const size = riskAmt / distance;
   const posValue = size * entry;
   const margin = posValue / lev;
-  const liq = isLong ? entry - margin/size : entry + margin/size;
+  const liq = isLong ? entry - (margin / size) : entry + (margin / size);
 
   let tp = 0, rrRatio = 0;
-  if(tpMode==='rr' && $('rr').value){
-    rrRatio = +$('rr').value;
-    tp = isLong ? entry + distance*rrRatio : entry - distance*rrRatio;
-  } else if(tpMode==='p' && $('tp').value){
-    tp = +$('tp').value;
-    const profit = isLong ? (tp-entry)*size : (entry-tp)*size;
-    rrRatio = profit ? (profit/riskAmt).toFixed(2) : 0;
+  if(tpMode !== 'none' && tpVal > 0){
+    if(tpMode === 'rr'){
+      rrRatio = tpVal;
+      tp = isLong ? entry + distance * rrRatio : entry - distance * rrRatio;
+    } else if(tpMode === 'price'){
+      tp = tpVal;
+      const profit = isLong ? (tp - entry) * size : (entry - tp) * size;
+      rrRatio = profit > 0 ? (profit / riskAmt).toFixed(2) : 0;
+    }
   }
 
-  const riskMarginPct = margin ? (riskAmt/margin*100).toFixed(1) : 0;
+  const riskMarginPct = margin ? (riskAmt / margin * 100).toFixed(1) : 0;
 
-  $('directionBadge').className = 'badge ' + (isLong?'long-bg':'short-bg');
-  $('directionBadge').textContent = isLong?'LONG ↑':'SHORT ↓';
+  $('directionBadge').className = 'badge ' + (isLong ? 'long-bg' : 'short-bg');
+  $('directionBadge').textContent = isLong ? 'LONG ↑' : 'SHORT ↓';
 
-  $('rrBadge').textContent = tp?`R:R 1:${rrRatio}`:'No TP';
-  $('rrBadge').style.background = rrRatio>=3?'#004d40':rrRatio>=2?'#1a1a2e':'#660022';
+  $('rrBadge').textContent = tp ? `R:R 1:${rrRatio}` : 'No TP';
+  $('rrBadge').style.background = rrRatio >= 3 ? '#004d40' : rrRatio >= 2 ? '#1a1a2e' : '#660022';
+  
+  const riskStyle = riskMarginPct > 90 ? 'color:var(--red)' : '';
 
   $('res').innerHTML = `
     <div class="res-item ${isLong?'long':'short'}"><div class="res-item-label">Entry</div><div class="res-item-value">${entry.toFixed(6)}</div></div>
@@ -216,119 +271,159 @@ function calc(){
     ${tp?`<div class="res-item ${isLong?'long':'short'}"><div class="res-item-label">Take Profit</div><div class="res-item-value">${tp.toFixed(6)}</div></div>`:''}
     <div class="res-item"><div class="res-item-label">Leverage</div><div class="res-item-value">${lev}x</div></div>
     <div class="res-item"><div class="res-item-label">Position Value</div><div class="res-item-value">$${posValue.toFixed(0)}</div></div>
-    <div class="res-item"><div class="res-item-label">Margin Used</div><div class="res-item-value">$${margin.toFixed(2)}</div></div>
-    <div class="res-item"><div class="res-item-label">Risk Amount</div><div class="res-item-value">$${riskAmt.toFixed(2)}</div></div>
-    <div class="res-item"><div class="res-item-label">Risk/Margin</div><div class="res-item-value">${riskMarginPct}%</div></div>
+    <div class="res-item"><div class="res-item-label">Margin</div><div class="res-item-value">$${margin.toFixed(2)}</div></div>
+    <div class="res-item"><div class="res-item-label">Risk $</div><div class="res-item-value">$${riskAmt.toFixed(2)}</div></div>
+    <div class="res-item"><div class="res-item-label">Risk/Margin</div><div class="res-item-value" style="${riskStyle}">${riskMarginPct}%</div></div>
     <div class="res-item"><div class="res-item-label">Liq Price</div><div class="res-item-value">${liq.toFixed(6)}</div></div>
   `;
+  
+  generateAndSetPositionName();
 }
 
 function clearResult(){
-  $('res').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#555">Nhập dữ liệu →</div>';
+  $('res').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;color:#555;font-size:14px">Nhập thông tin để tính →</div>';
   $('directionBadge').textContent = '-';
   $('rrBadge').textContent = 'R:R ?';
 }
 
-// Lưu vị thế
-function savePosition(){
-  const name = $('posName').value.trim() || `Position ${new Date().toLocaleTimeString()}`;
-  const data = {
-    name,
-    acc: $('acc').value,
-    riskMode, riskPct: $('rp').value, riskAmt: $('ra').value,
-    entry: $('e').value,
-    slMode, slPrice: $('sp').value, slPct: $('spp').value,
-    tpMode, rr: $('rr').value, tpPrice: $('tp').value,
-    lev: $('lev').value,
-    savedAt: new Date().toISOString()
-  };
-
-  let saved = JSON.parse(localStorage.getItem('savedPositions') || '[]');
-  saved.unshift(data); // thêm vào đầu danh sách
-  localStorage.setItem('savedPositions', JSON.stringify(saved));
-  loadSavedPositions();
-  alert(`Đã lưu: "${name}"`);
+function getPositions() {
+  try {
+    return JSON.parse(localStorage.getItem('savedPositions')) || [];
+  } catch (e) {
+    return [];
+  }
 }
 
-// Load lại danh sách
-function loadSavedPositions(){
-  const list = $('savedList');
-  const saved = JSON.parse(localStorage.getItem('savedPositions') || '[]');
-  $('savedCount').textContent = saved.length;
+function savePositions(positions) {
+  localStorage.setItem('savedPositions', JSON.stringify(positions));
+}
 
-  if(saved.length===0){
-    list.innerHTML = '<div style="text-align:center;padding:20px;color:#555">Chưa có vị thế nào được lưu</div>';
+function savePosition() {
+  const name = $('posName').value.trim();
+  if (!name) {
+    alert('Tên vị thế trống. Vui lòng nhập các thông số để tự động tạo tên.');
     return;
   }
 
-  list.innerHTML = saved.map((pos,i)=>`
-    <div class="saved-item">
-      <div>
-        <div class="saved-name">${pos.name}</div>
-        <div style="font-size:11px;color:#666;margin-top:2px">
-          ${new Date(pos.savedAt).toLocaleString('vi-VN')}
-        </div>
-      </div>
-      <div class="saved-info">
-        ${pos.entry} | ${pos.lev}x | Risk ${riskMode==='p'?pos.riskPct+'%':('$'+pos.riskAmt)}
-      </div>
-      <div class="saved-actions">
-        <button onclick="loadPosition(${i})" title="Load">↻</button>
-        <button onclick="deletePosition(${i})" title="Xóa" style="color:#ff4466">×</button>
-      </div>
-    </div>
-  `).join('');
-}
+  const position = {
+    name: name,
+    acc: $('acc').value,
+    riskMode: riskMode,
+    rp: $('rp').value,
+    ra: $('ra').value,
+    e: $('e').value,
+    sp: $('sp').value,
+    tpMode: tpMode,
+    tpInput: $('tpInput').value,
+    lev: $('lev').value,
+    ts: Date.now()
+  };
 
-// Load vị thế đã lưu vào form
-function loadPosition(index){
-  const saved = JSON.parse(localStorage.getItem('savedPositions') || '[]');
-  const pos = saved[index];
-  if(!pos) return;
+  let positions = getPositions();
+  const existingIndex = positions.findIndex(p => p.name === name);
 
-  $('acc').value = pos.acc;
-  riskMode = pos.riskMode;
-  $('rp').value = pos.riskPct || '';
-  $('ra').value = pos.riskAmt || '';
-  $('e').value = pos.entry;
-  slMode = pos.slMode;
-  $('sp').value = pos.slPrice || '';
-  $('spp').value = pos.slPct || '';
-  tpMode = pos.tpMode;
-  $('rr').value = pos.rr || '';
-  $('tp').value = pos.tpPrice || '';
-  $('lev').value = pos.lev;
-  $('posName').value = pos.name;
+  if (existingIndex > -1) {
+    if (confirm(`Vị thế "${name}" đã tồn tại. Bạn có muốn ghi đè không?`)) {
+      positions[existingIndex] = position;
+    } else {
+      return;
+    }
+  } else {
+    positions.push(position);
+  }
 
-  updateToggles();
-  calc();
-}
-
-// Xóa một vị thế
-function deletePosition(index){
-  if(!confirm('Xóa vị thế này?')) return;
-  let saved = JSON.parse(localStorage.getItem('savedPositions') || '[]');
-  saved.splice(index,1);
-  localStorage.setItem('savedPositions', JSON.stringify(saved));
+  savePositions(positions);
   loadSavedPositions();
 }
 
-function clearForm(){
-  if(confirm('Xóa toàn bộ dữ liệu trong form?')){
-    document.querySelectorAll('input[type=number], input[type=text]').forEach(i=>i.value='');
-    $('lev').value = 20;
-    $('levVal').textContent = '20x';
-    riskMode='p'; slMode='p'; tpMode='rr';
-    updateToggles();
-    calc();
+function loadSavedPositions() {
+  const positions = getPositions().sort((a, b) => b.ts - a.ts);
+  const listEl = $('savedList');
+  $('savedCount').textContent = positions.length;
+
+  if (positions.length === 0) {
+    listEl.innerHTML = '<div style="text-align:center;padding:30px;color:#555">Chưa có vị thế nào được lưu</div>';
+    return;
+  }
+
+  listEl.innerHTML = positions.map((p, index) => {
+    const isLong = +p.sp < +p.e;
+    return `
+      <div class="saved-item" id="pos-${index}">
+        <div style="flex:1">
+          <div class="saved-name">${p.name}</div>
+          <div style="font-size:11px;color:#888;margin-top:4px">${new Date(p.ts).toLocaleString()}</div>
+        </div>
+        <div class="saved-info">
+          ${isLong ? 'LONG' : 'SHORT'} @ ${p.e}
+        </div>
+        <div class="saved-actions">
+          <button onclick="loadPosition(${index})">⟲</button>
+          <button onclick="deletePosition(${index})">🗑</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function loadPosition(index) {
+  const positions = getPositions().sort((a, b) => b.ts - a.ts);
+  const p = positions[index];
+  if (!p) return;
+
+  $('acc').value = p.acc;
+  riskMode = p.riskMode;
+  $('rp').value = p.rp;
+  $('ra').value = p.ra;
+  $('e').value = p.e;
+  $('sp').value = p.sp;
+  tpMode = p.tpMode;
+  $('tpInput').value = p.tpInput;
+  $('lev').value = p.lev;
+  
+  // Update UI after loading
+  updateToggles();
+  $('levVal').textContent = p.lev + 'x';
+  calc();
+  
+  $('posName').value = p.name;
+  
+  // Optional: scroll to top and highlight
+  window.scrollTo(0,0);
+  const itemEl = document.getElementById(`pos-${index}`);
+  if(itemEl){
+    itemEl.style.background = 'rgba(240, 185, 11, 0.1)';
+    setTimeout(() => { itemEl.style.background = '#111'; }, 1500);
   }
 }
 
-// Auto calculate
-document.querySelectorAll('input').forEach(el=>el.addEventListener('input',()=>setTimeout(calc,50)));
-document.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click',calc));
+function deletePosition(index) {
+  if (!confirm('Bạn có chắc muốn xóa vị thế này không?')) return;
+  let positions = getPositions().sort((a, b) => b.ts - a.ts);
+  positions.splice(index, 1);
+  savePositions(positions);
+  loadSavedPositions();
+}
 
-// Khởi động
+function clearForm() {
+  $('acc').value = '1000';
+  riskMode = 'p';
+  $('rp').value = '1';
+  $('ra').value = '15';
+  $('e').value = '';
+  $('sp').value = '';
+  tpMode = 'rr';
+  $('tpInput').value = '2';
+  $('lev').value = '20';
+  $('posName').value = '';
+  
+  updateToggles();
+  $('levVal').textContent = '20x';
+  clearResult();
+}
+
+// Auto calc + init
+document.querySelectorAll('input').forEach(el => el.addEventListener('input', () => setTimeout(calc, 50)));
 updateToggles();
 calc();
 loadSavedPositions();
