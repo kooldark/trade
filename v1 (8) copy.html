@@ -67,56 +67,34 @@ h2{
   align-items:center;
 }
 
-/* ==================== FLOATING LABEL ==================== */
-.input-group {
-  position: relative;
-  margin-bottom: 11px;
+/* Input row */
+.input-row{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-bottom:11px;
+  flex-wrap:wrap;
 }
-
-.input-group input {
-  width: 100%;
-  background: #111;
-  color: #fff;
-  border: 1px solid #444;
-  border-radius: 8px;
-  padding: 16px 12px 8px 12px; /* trên nhiều hơn để label nổi lên */
-  font-size: 15px;
-  transition: all 0.2s;
+.input-row label{
+  flex:0 0 90px;
+  font-size:13px;
+  color:#aaa;
+  font-weight:500;
 }
-
-.input-group input::placeholder {
-  opacity: 0;
-  transition: inherit;
+.input-row input{
+  flex:1;
+  background:#111;
+  color:#fff;
+  border:1px solid #444;
+  border-radius:8px;
+  padding:10px 12px;
+  font-size:15px;
+  min-width:0;
 }
-
-.input-group label {
-  position: absolute;
-  top: 50%;
-  left: 12px;
-  transform: translateY(-50%);
-  color: #aaa;
-  font-size: 13px;
-  font-weight: 500;
-  pointer-events: none;
-  transition: all 0.2s ease;
-  background: #111;
-  padding: 0 4px;
-  transform-origin: left center;
-}
-
-.input-group input:focus,
-.input-group input:not(:placeholder-shown) {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(240,185,11,.2);
-  outline: none;
-}
-
-.input-group input:focus + label,
-.input-group input:not(:placeholder-shown) + label {
-  top: 10px;
-  font-size: 11px;
-  color: var(--accent);
-  font-weight: 600;
+.input-row input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 2px rgba(240,185,11,.2);
+  outline:none;
 }
 
 /* Toggle buttons */
@@ -186,13 +164,13 @@ h2{
 /* Button */
 .btn-full{
   width:50%;
-  padding:12px;
+  padding:5px;
   background:var(--accent);
   color:#000;
   border:none;
   border-radius:8px;
-  font-weight:600;
-  font-size:14px;
+  font-weight:500;
+  font-size:10px;
   margin-top:8px;
   cursor:pointer;
   transition:filter .2s;
@@ -289,55 +267,53 @@ h2{
     <div class="card">
       <h2>Position Calculator <span id="directionBadge" class="badge">-</span></h2>
       
-      <!-- Balance + Risk (2 cột) -->
+      <!-- Balance + Risk nằm chung 1 dòng (rất gọn & pro) -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:11px;">
         <!-- Balance -->
-        <div class="input-group">
-          <input type="number" id="acc" value="1000" placeholder=" " required>
+        <div class="input-row" style="margin-bottom:0;">
           <label>Balance</label>
+          <input type="number" id="acc" value="1000">
         </div>
         
-        <!-- Risk %/$ -->
-        <div style="display:flex;gap:8px;align-items:end;">
-          <div class="input-group" style="flex:1;">
-            <input type="number" id="rp" placeholder=" " value="1" step="0.1" required>
-            <input type="number" id="ra" placeholder=" " value="15" style="display:none;" required>
-            <label>Risk</label>
-          </div>
-          <div class="toggle" data-group="risk">
-            <button class="active" data-mode="p">%</button>
-            <button data-mode="a">$</button>
+        <!-- Risk -->
+        <div class="input-row" style="margin-bottom:0;">
+          <label style="flex: 0 0 90px;">Risk</label>
+          <div style="flex: 1; display: flex; gap: 8px;">
+            <div style="flex: 1; position: relative;">
+              <input type="number" id="rp" placeholder="1" step="0.1" value="1" style="display:block; width: 100%;">
+              <input type="number" id="ra" placeholder="15" style="display:none; width: 100%;">
+            </div>
+            <div class="toggle" data-group="risk" style="margin-bottom: 0;">
+              <button class="active" data-mode="p">%</button>
+              <button data-mode="a">$</button>
+            </div>
           </div>
         </div>
       </div>
       
-      <!-- Entry + Stop Loss (2 cột) -->
+      <!-- Entry + Stop Loss nằm chung 1 dòng (gọn & đẹp) -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:11px;">
-        <div class="input-group">
-          <input type="number" id="e" placeholder=" " step="any">
+        <div class="input-row" style="margin-bottom:0;">
           <label>Entry</label>
+          <input type="number" id="e" placeholder="72350" step="any">
         </div>
-        <div class="input-group">
-          <input type="number" id="sp" placeholder=" " step="any">
+        <div class="input-row" style="margin-bottom:0;">
           <label>Stop Loss</label>
+          <input type="number" id="sp" placeholder="71500" step="any">
         </div>
       </div>
       
-      <!-- Take Profit -->
-      <div style="display:flex;gap:8px;align-items:end;margin-bottom:11px;">
-        <div class="toggle" data-group="tp" style="flex:none;">
+      <div class="input-row"><label>Take Profit</label>
+        <div class="toggle" data-group="tp" style="flex:1;max-width:280px;">
+          
           <button class="active" data-mode="rr">R:R</button>
           <button data-mode="price">Price</button>
         </div>
-        <div class="input-group" style="flex:1;">
-          <input type="number" id="tpInput" placeholder=" " value="2" step="any">
-          <label id="tpLabel">R:R</label>
-        </div>
+        <input type="number" id="tpInput" placeholder="2" step="any" value="2">
       </div>
       
-      <!-- Leverage -->
-      <div style="margin-bottom:10px;">
-        <div class="lev-row">
+      <div class="input-row"><label>Leverage</label>
+        <div class="lev-row" style="flex:1;">
           <input type="range" id="lev" min="1" max="125" value="20" style="flex:1">
           <div class="lev-val" id="levVal">20x</div>
         </div>
@@ -429,6 +405,12 @@ function loadLastState() {
   } catch(e) { return false; }
 }
 
+// Tự động lưu khi thay đổi
+document.querySelectorAll('input, .toggle button, .lev-preset').forEach(el => {
+  el.addEventListener('input', () => setTimeout(saveCurrentState, 100));
+  el.addEventListener('click', () => setTimeout(saveCurrentState, 100));
+});
+
 // Tạo tên vị thế
 function generatePositionName() {
   const entry = parseFloat($('e').value) || 0;
@@ -440,7 +422,7 @@ function generatePositionName() {
   return `${symbol} ${isLong?'LONG':'SHORT'} ${rounded}`;
 }
 
-// Toggle & Leverage & TP Label
+// Toggle & Leverage
 function updateToggles(){
   document.querySelectorAll('.toggle').forEach(t => {
     const mode = t.dataset.group === 'risk' ? riskMode : tpMode;
@@ -448,20 +430,18 @@ function updateToggles(){
   });
   $('rp').style.display = riskMode==='p'?'block':'none';
   $('ra').style.display = riskMode==='a'?'block':'none';
-  
-  // Cập nhật label Take Profit
-  const tpLabel = $('tpLabel');
-  if (tpLabel) {
-    tpLabel.textContent = tpMode === 'rr' ? 'R:R' : 'Take Profit';
-  }
+  const tpIn = $('tpInput');
+  if(tpMode==='none'){ tpIn.placeholder='No TP'; tpIn.value=''; tpIn.disabled=true; }
+  else if(tpMode==='rr'){ tpIn.placeholder='2 (R:R)'; if(!tpIn.value) tpIn.value=2; tpIn.disabled=false; }
+  else { tpIn.placeholder='Giá TP'; tpIn.disabled=false; }
 }
 
-document.querySelectorAll('.toggle button').forEach(b=>b.addEventListener('click', ()=>{
+document.querySelectorAll('.toggle button').forEach(b=>b.onclick=()=>{
   const g = b.closest('.toggle').dataset.group;
   if(g==='risk') riskMode = b.dataset.mode;
   if(g==='tp') tpMode = b.dataset.mode;
   updateToggles(); calc(); saveCurrentState();
-}));
+});
 
 document.querySelectorAll('.lev-preset').forEach(b=>b.onclick=()=>{
   const v = b.dataset.lev;
@@ -477,7 +457,7 @@ $('lev').oninput = e => {
   calc(); saveCurrentState();
 };
 
-// Tính toán chính (giữ nguyên logic cũ)
+// Tính toán chính
 function calc(){
   const acc = +$('acc').value || 0;
   const entry = +$('e').value || 0;
@@ -527,7 +507,7 @@ function calc(){
     </div>`;
 }
 
-// SAVE / LOAD / DELETE POSITIONS (giữ nguyên)
+// SAVE / LOAD / DELETE POSITIONS
 function savePosition(){
   if(!+$('e').value || !+$('sp').value){ alert('Vui lòng nhập Entry và Stop Loss'); return; }
   const name = generatePositionName();
@@ -592,7 +572,6 @@ function clearForm(){
 // KHỞI ĐỘNG
 loadLastState() || calc();
 loadSavedPositions();
-updateToggles();
 
 // Tự động tính toán realtime
 document.querySelectorAll('input').forEach(el=>el.addEventListener('input',()=>setTimeout(()=>{calc();saveCurrentState();},50)));
