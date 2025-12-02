@@ -5,81 +5,66 @@
 <title>Fast PosCalc Pro</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-/* 1. KÍCH THƯỚC CHỮ VÀ KHOẢNG CÁCH CHUNG */
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0d0d0d;color:#eee;font-family:-apple-system,system-ui,sans-serif;line-height:1.4;min-height:100vh;padding:8px 6px}
-:root{--c:#1a1a1a;--b:#333;--a:#f0b90b;--g:#00d4aa;--r:#ff4466;--rad:16px} /* Tăng border radius */
-.container{max-width:1400px;margin:0 auto;display:grid;gap:10px; /* Tăng khoảng cách giữa các khối */
-  grid-template-columns:1fr}
-@media(min-width:768px){.container{grid-template-columns:440px 1fr; /* Tăng chiều rộng sidebar */
-  align-items:start}}
-
-.card{background:var(--c);border:1px solid var(--b);border-radius:var(--rad);padding:18px; /* Tăng padding */
-  overflow:hidden;font-size:16px} /* Tăng font size cơ bản */
-h2{font-size:16px;font-weight:700;color:var(--a);margin-bottom:12px; /* Tăng khoảng cách */
-  padding-bottom:8px;border-bottom:1px solid var(--b);display:flex;justify-content:space-between}
-
-/* INPUT TỐI ƯU */
-.input-group{position:relative;margin:10px 0}
-.input-group input{width:100%;background:#111;color:#fff;border:1px solid #444;border-radius:10px; /* Tăng border radius */
-  padding:15px 12px 8px;font-size:17px} /* Tăng font size input */
-.input-group label{position:absolute;top:50%;left:12px;transform:translateY(-50%);color:#aaa;font-size:14px; /* Tăng font size label */
-  pointer-events:none;background:#111;padding:0 4px;transition:.2s}
+body{background:#0d0d0d;color:#eee;font-family:-apple-system,system-ui,sans-serif;line-height:1.4;min-height:100vh;padding:6px 4px}
+:root{--c:#1a1a1a;--b:#333;--a:#f0b90b;--g:#00d4aa;--r:#ff4466;--rad:14px}
+.container{max-width:1400px;margin:0 auto;display:grid;gap:7px;grid-template-columns:1fr}
+@media(min-width:768px){.container{grid-template-columns:420px 1fr;align-items:start}}
+.card{background:var(--c);border:1px solid var(--b);border-radius:var(--rad);padding:12px 13px;overflow:hidden;font-size:14.5px}
+h2{font-size:14px;font-weight:700;color:var(--a);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--b);display:flex;justify-content:space-between}
+.input-group{position:relative;margin:7px 0}
+.input-group input{width:100%;background:#111;color:#fff;border:1px solid #444;border-radius:8px;padding:13px 9px 6px;font-size:14.5px}
+.input-group label{position:absolute;top:50%;left:9px;transform:translateY(-50%);color:#aaa;font-size:12.5px;pointer-events:none;background:#111;padding:0 4px;transition:.2s}
 .input-group input:focus,.input-group input:not(:placeholder-shown){border-color:var(--a)}
-.input-group input:focus+label,.input-group input:not(:placeholder-shown)+label{top:9px;font-size:12px; /* Tăng font size label đã focus */
-  color:var(--a);font-weight:600}
-
-/* LEVERAGE */
-.toggle{display:flex;background:#111;border:1px solid #444;border-radius:10px;overflow:hidden;margin:8px 0}
-.toggle button{flex:1;padding:10px 4px;font-size:13px;font-weight:600;color:#aaa;background:transparent;border:none;cursor:pointer}
+.input-group input:focus+label,.input-group input:not(:placeholder-shown)+label{top:7px;font-size:10.5px;color:var(--a);font-weight:600}
+.toggle{display:flex;background:#111;border:1px solid #444;border-radius:8px;overflow:hidden;margin:6px 0}
+.toggle button{flex:1;padding:7px 4px;font-size:11.5px;font-weight:600;color:#aaa;background:transparent;border:none;cursor:pointer}
 .toggle button.active{background:var(--a);color:#000}
-.lev-row{display:flex;gap:10px;align-items:center;margin:8px 0}
-.lev-presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.lev-preset{padding:6px 12px;background:#222;border:1px solid #444;border-radius:8px;font-size:13px;cursor:pointer}
+.lev-row{display:flex;gap:8px;align-items:center;margin:6px 0}
+.lev-presets{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.lev-preset{padding:4px 9px;background:#222;border:1px solid #444;border-radius:6px;font-size:11.5px;cursor:pointer}
 .lev-preset.active{background:var(--a);color:#000;font-weight:700}
-.lev-val{background:var(--a);color:#000;padding:6px 12px;border-radius:8px;font-weight:800;font-size:15px;min-width:55px;text-align:center}
-.btn{display:inline-block;width:48%;padding:12px;background:var(--a);color:#000;border:none;border-radius:10px;font-weight:600;font-size:15px;cursor:pointer}
+.lev-val{background:var(--a);color:#000;padding:4px 10px;border-radius:6px;font-weight:800;font-size:13px;min-width:48px;text-align:center}
+.btn{display:inline-block;width:48%;padding:9px;background:var(--a);color:#000;border:none;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer}
 .btn:hover{filter:brightness(1.15)}
+.btn-gray{background:#333;color:#fff}
+.btn-danger{background:#660022;color:#fff}
 
-/* RESULT - KẾT QUẢ */
+/* RESULT - SIÊU GỌN */
 .result-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); /* Tăng kích thước tối thiểu */
-  gap:8px; /* Tăng khoảng cách */
-  margin:10px -18px 0; /* Đẩy tràn viền */
-  padding:10px 18px 4px;
+  grid-template-columns:repeat(auto-fit,minmax(92px,1fr));
+  gap:5px;
+  margin:8px -6px 0;
+  padding:8px 6px 2px;
   border-top:1px solid var(--b);
 }
 .res-item{
   background:#111;
-  padding:10px 10px; /* Tăng padding */
-  border-radius:14px; /* Tăng border radius */
-  border-left:5px solid var(--a); /* Mặc định là màu vàng */
+  padding:7px 8px;
+  border-radius:11px;
+  border-left:4px solid var(--a);
   text-align:center;
 }
-.res-item.long{border-left-color:var(--g)} /* Màu Xanh cho LONG */
-.res-item.short{border-left-color:var(--r)} /* Màu Đỏ cho SHORT */
-.res-item-label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:0.7px;font-weight:600}
+.res-item.long{border-left-color:var(--g)}
+.res-item.short{border-left-color:var(--r)}
+.res-item-label{font-size:8.8px;color:#888;text-transform:uppercase;letter-spacing:0.7px;font-weight:600}
 .res-item-value{
   font-weight:800;
-  font-size:16px; /* Tăng font size giá trị */
-  margin-top:2px;
-  color:#ffffff !important;
+  font-size:13.8px;
+  margin-top:1px;
+  color:#ffffff !important;   /* TẤT CẢ CHỮ SỐ MÀU TRẮNG */
 }
 
-/* NỔI BẬT LỚN HƠN */
+/* NỔI BẬT POSITION VALUE & MARGIN */
 .highlight{
   background:linear-gradient(135deg,#222,#111);
   border:2px solid var(--a)!important;
   box-shadow:0 4px 18px rgba(240,185,11,.5);
-  transform:scale(1.03);
+  transform:scale(1.05);
 }
-/* QUAN TRỌNG: Đảm bảo các mục highlight có LONG/SHORT vẫn giữ màu viền */
-.highlight.long{border-left-color:var(--g)!important;} 
-.highlight.short{border-left-color:var(--r)!important;}
-
 .highlight .res-item-value{
-  font-size:19px!important;
+  font-size:17px!important;
   font-weight:900!important;
   color:var(--a)!important;
 }
@@ -97,20 +82,15 @@ h2{font-size:16px;font-weight:700;color:var(--a);margin-bottom:12px; /* Tăng kh
 
 /* Mobile tối ưu */
 @media(max-width:480px){
-  .card{padding:14px}
-  .result-grid{grid-template-columns:repeat(3,1fr);gap:6px;padding:8px 6px}
-  .res-item{padding:8px 6px}
-  .res-item-value{font-size:15px}
-  .highlight .res-item-value{font-size:17px!important}
+  .result-grid{grid-template-columns:repeat(3,1fr);gap:4px;padding:7px 4px}
+  .res-item{padding:6px 5px}
+  .highlight .res-item-value{font-size:15px!important}
 }
-
-/* SAVED LIST TỐI ƯU */
-.saved-list{max-height:55vh;overflow-y:auto;margin-top:8px}
-.saved-item{background:#111;border:1px solid #333;border-radius:12px;padding:12px;margin-bottom:8px; /* Tăng khoảng cách và padding */
-  display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px}
+.saved-list{max-height:48vh;overflow-y:auto;margin-top:6px}
+.saved-item{background:#111;border:1px solid #333;border-radius:9px;padding:9px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px}
 .saved-name{font-weight:700;color:var(--a)}
-.saved-actions button{background:transparent;color:#888;border:none;cursor:pointer;font-size:20px}
-.badge{font-size:11px;padding:4px 9px;border-radius:7px;font-weight:700}
+.saved-actions button{background:transparent;color:#888;border:none;cursor:pointer;font-size:18px}
+.badge{font-size:10px;padding:3px 8px;border-radius:6px;font-weight:700}
 .long-bg{background:#004d40;color:var(--g)}
 .short-bg{background:#660022;color:var(--r)}
 </style>
@@ -120,29 +100,29 @@ h2{font-size:16px;font-weight:700;color:var(--a);margin-bottom:12px; /* Tăng kh
   <div class="calc-sidebar">
     <div class="card">
       <h2>Position Calc <span id="directionBadge" class="badge">-</span></h2>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
         <div class="input-group"><input type="number" id="acc" value="1000" placeholder=" "><label>Balance</label></div>
-        <div style="display:flex;gap:8px;align-items:end">
+        <div style="display:flex;gap:6px;align-items:end">
           <div class="input-group" style="flex:1"><input type="number" id="rp" value="1" step="0.1" placeholder=" "><input type="number" id="ra" value="15" style="display:none"><label>Risk</label></div>
           <div class="toggle" data-group="risk"><button class="active" data-mode="p">%</button><button data-mode="a">$</button></div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:7px 0">
         <div class="input-group"><input type="number" id="e" placeholder=" " step="any"><label>Entry</label></div>
         <div class="input-group"><input type="number" id="sp" placeholder=" " step="any"><label>Stop Loss</label></div>
       </div>
-      <div style="display:flex;gap:8px;align-items:end;margin:10px 0">
+      <div style="display:flex;gap:6px;align-items:end;margin:7px 0">
         <div class="toggle" data-group="tp"><button class="active" data-mode="rr">R:R</button><button data-mode="price">Price</button></div>
         <div class="input-group" style="flex:1"><input type="number" id="tpInput" value="2" step="any" placeholder=" "><label id="tpLabel">R:R</label></div>
       </div>
-      <div style="margin:8px 0">
+      <div style="margin:6px 0">
         <div class="lev-row"><input type="range" id="lev" min="1" max="150" value="20" style="flex:1"><div class="lev-val" id="levVal">20x</div></div>
         <div class="lev-presets">
           <div class="lev-preset" data-lev="5">5x</div><div class="lev-preset" data-lev="10">10x</div><div class="lev-preset active" data-lev="20">20x</div>
           <div class="lev-preset" data-lev="50">50x</div><div class="lev-preset" data-lev="100">100x</div><div class="lev-preset" data-lev="150">150x</div>
         </div>
       </div>
-      <div style="display:flex;gap:10px;margin-top:15px">
+      <div style="display:flex;gap:7px;margin-top:10px">
         <button class="btn" onclick="savePosition()">SAVE</button>
         <button class="btn btn-gray" onclick="clearForm()">CLEAR</button>
       </div>
@@ -150,11 +130,11 @@ h2{font-size:16px;font-weight:700;color:var(--a);margin-bottom:12px; /* Tăng kh
   </div>
 
   <div class="main-content">
-    <div class="card"><div id="liveResult" style="text-align:center;padding:40px;color:#555;font-size:16px">Nhập Entry + SL</div></div>
+    <div class="card"><div id="liveResult" style="text-align:center;padding:30px;color:#555;font-size:14px">Nhập Entry + SL</div></div>
     <div class="card">
       <h2>Saved <span id="savedCount">0</span></h2>
-      <div id="savedList" class="saved-list"><div style="text-align:center;padding:30px;color:#555">Chưa có vị thế</div></div>
-      <button class="btn btn-danger" style="width:100%;margin-top:8px" onclick="if(confirm('Xóa tất cả?')){localStorage.removeItem('savedPositions');loadSavedPositions()}">CLEAR ALL</button>
+      <div id="savedList" class="saved-list"><div style="text-align:center;padding:20px;color:#555">Chưa có vị thế</div></div>
+      <button class="btn btn-danger" style="width:100%;margin-top:6px" onclick="if(confirm('Xóa tất cả?')){localStorage.removeItem('savedPositions');loadSavedPositions()}">CLEAR ALL</button>
     </div>
   </div>
 </div>
@@ -172,24 +152,22 @@ $('lev').oninput=e=>{const v=e.target.value;$('levVal').textContent=v+'x';docume
 
 function calc(){
   const a=+$( 'acc').value||0,e=+$( 'e').value||0,sp=+$( 'sp').value||0,l=+$( 'lev').value||1,t=+$( 'tpInput').value||0;
-  if(!a||!e||!sp||e===sp){$('liveResult').innerHTML='<div style="text-align:center;padding:40px;color:#555;font-size:16px">Nhập Entry + SL</div>';$('directionBadge').textContent='-';return}
-  const r=riskMode==='p'?a*(+$( 'rp').value||0)/100:(+$( 'ra').value||0);if(r<=0)return void($('liveResult').innerHTML='<div style="color:#f44;padding:20px;font-size:16px">Risk > 0</div>');
+  if(!a||!e||!sp||e===sp){$('liveResult').innerHTML='<div style="text-align:center;padding:30px;color:#555;font-size:14px">Nhập Entry + SL</div>';$('directionBadge').textContent='-';return}
+  const r=riskMode==='p'?a*(+$( 'rp').value||0)/100:(+$( 'ra').value||0);if(r<=0)return void($('liveResult').innerHTML='<div style="color:#f44;padding:15px">Risk > 0</div>');
   const long=sp<e,d=Math.abs(e-sp),sz=r/d,pv=sz*e,m=pv/l,liq=long?e-(m/sz):e+(m/sz);
   let tp=0,rr=0;
   if(t>0){if(tpMode==='rr'){rr=t;tp=long?e+d*rr:e-d*rr}else{tp=t;rr=((long?(tp-e):(e-tp))*sz/r).toFixed(2)}}
   const pct=m?(r/m*100).toFixed(1):0;
   const isHighRisk = pct >= 90;
   $('directionBadge').className='badge '+(long?'long-bg':'short-bg');$('directionBadge').textContent=long?'LONG':'SHORT';
-  const posClass = long ? 'long' : 'short'; // Class chung cho vị thế
-
   $('liveResult').innerHTML=`
     <div class="result-grid">
-      <div class="res-item highlight"><div class="res-item-label">Lev</div><div class="res-item-value">${l}x</div></div>
-      <div class="res-item highlight ${posClass}"><div class="res-item-label">Entry</div><div class="res-item-value">${f(e)}</div></div>
+      <div class="res-item ${long?'long':'short'}"><div class="res-item-label">Entry</div><div class="res-item-value">${f(e)}</div></div>
+      <div class="res-item ${long?'long':'short'}"><div class="res-item-label">Stop Loss</div><div class="res-item-value">${f(sp)}</div></div>
+      ${tp?`<div class="res-item ${long?'long':'short'}"><div class="res-item-label">Take Profit</div><div class="res-item-value">${f(tp)}</div></div>`:''}
+      <div class="res-item"><div class="res-item-label">Lev</div><div class="res-item-value">${l}x</div></div>
       <div class="res-item highlight"><div class="res-item-label">Pos Value</div><div class="res-item-value">$${f(pv,0)}</div></div>
-      <div class="res-item ${posClass}"><div class="res-item-label">Stop Loss</div><div class="res-item-value">${f(sp)}</div></div>
-      ${tp?`<div class="res-item ${posClass}"><div class="res-item-label">Take Profit</div><div class="res-item-value">${f(tp)}</div></div>`:''}
-      <div class="res-item"><div class="res-item-label">Margin</div><div class="res-item-value">$${f(m,2)}</div></div>
+      <div class="res-item highlight"><div class="res-item-label">Margin</div><div class="res-item-value">$${f(m,2)}</div></div>
       <div class="res-item"><div class="res-item-label">Risk $</div><div class="res-item-value">$${f(r,2)}</div></div>
       <div class="res-item ${isHighRisk?'risk-high':''}"><div class="res-item-label">Risk/Margin</div><div class="res-item-value">${pct}%</div></div>
       <div class="res-item"><div class="res-item-label">Liq</div><div class="res-item-value">${f(liq)}</div></div>
@@ -197,9 +175,9 @@ function calc(){
     </div>`;
 }
 
-function savePosition(){if(!+$('e').value||!+$('sp').value)return alert('Nhập Entry + SL');const n=name(),list=get(),i=list.findIndex(p=>p.name===n);if(i>-1&&!confirm(n+' đã tồn tại. Ghi đè?'))return;const p={name:n,acc:$('acc').value,riskMode,rp:$('rp').value,ra:$('ra').value,e:$('e').value,sp:$('sp').value,tpMode:$('tpInput').value,lev:$('lev').value,ts:Date.now()};i>-1?list[i]=p:list.push(p);localStorage.setItem('p',JSON.stringify(list));loadSaved();alert('Đã lưu: '+n)}
+function savePosition(){if(!+$('e').value||!+$('sp').value)return alert('Nhập Entry + SL');const n=name(),list=get(),i=list.findIndex(p=>p.name===n);if(i>-1&&!confirm(n+' đã tồn tại. Ghi đè?'))return;const p={name:n,acc:$('acc').value,riskMode,rp:$('rp').value,ra:$('ra').value,e:$('e').value,sp:$('sp').value,tpMode,tpInput:$('tpInput').value,lev:$('lev').value,ts:Date.now()};i>-1?list[i]=p:list.push(p);localStorage.setItem('p',JSON.stringify(list));loadSaved();alert('Đã lưu: '+n)}
 function get(){try{return JSON.parse(localStorage.getItem('p')||'[]')}catch(e){return[]}}
-function loadSaved(){const l=get().sort((a,b)=>b.ts-a.ts);$('savedCount').textContent=l.length;const el=$('savedList');if(!l.length){el.innerHTML='<div style="text-align:center;padding:30px;color:#555;font-size:15px">Chưa có vị thế</div>';return}el.innerHTML=l.map((p,i)=>`<div class="saved-item"><div><div class="saved-name">${p.name}</div><div style="font-size:12px;color:#888">${new Date(p.ts).toLocaleString('vi').slice(0,17)}</div></div><div style="font-size:13px;color:#aaa">${+p.sp<+p.e?'LONG':'SHORT'} @ ${p.e} • ${p.lev}x</div><div class="saved-actions"><button onclick="loadPos(${i})">↻</button><button onclick="del(${i})">×</button></div></div>`).join('')}
+function loadSaved(){const l=get().sort((a,b)=>b.ts-a.ts);$('savedCount').textContent=l.length;const el=$('savedList');if(!l.length){el.innerHTML='<div style="text-align:center;padding:20px;color:#555">Chưa có vị thế</div>';return}el.innerHTML=l.map((p,i)=>`<div class="saved-item"><div><div class="saved-name">${p.name}</div><div style="font-size:10px;color:#888">${new Date(p.ts).toLocaleString('vi').slice(0,17)}</div></div><div style="font-size:11px;color:#aaa">${+p.sp<+p.e?'LONG':'SHORT'} @ ${p.e} • ${p.lev}x</div><div class="saved-actions"><button onclick="loadPos(${i})">↻</button><button onclick="del(${i})">×</button></div></div>`).join('')}
 function loadPos(i){const p=get().sort((a,b)=>b.ts-a.ts)[i];if(!p)return;$('acc').value=p.acc;riskMode=p.riskMode;$('rp').value=p.rp;$('ra').value=p.ra;$('e').value=p.e;$('sp').value=p.sp;tpMode=p.tpMode;$('tpInput').value=p.tpInput;$('lev').value=p.lev;updateToggles();$('levVal').textContent=p.lev+'x';document.querySelectorAll('.lev-preset').forEach(b=>b.classList.toggle('active',b.dataset.lev==p.lev));calc();saveState();scrollTo(0,0)}
 function del(i){if(!confirm('Xóa?'))return;let l=get().sort((a,b)=>b.ts-a.ts);l.splice(i,1);localStorage.setItem('p',JSON.stringify(l));loadSaved()}
 function clearForm(){if(confirm('Xóa hết dữ liệu hiện tại?')){localStorage.removeItem('s');location.reload()}}
